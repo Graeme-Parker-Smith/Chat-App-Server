@@ -4,7 +4,7 @@ const server = require("http").Server(app);
 const io = require("socket.io")(server);
 
 
-app.get('/', () => {
+app.get('/', (req, res) => {
   res.send('<h1>Greetings from the graeme-chat-app server!</h1>')
 })
 
