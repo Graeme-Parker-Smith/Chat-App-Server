@@ -8,25 +8,25 @@ const cors = require("cors");
 
 const app = express();
 const server = require("http").Server(app);
+console.log(server);
 const io = require("socket.io")(server);
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(authRoutes);
-if (process.env.mongoString) {
-  const mongoUri = process.env.mongoString;
-  mongoose.connect(mongoUri, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true
-  });
-  mongoose.connection.on("connected", () => {
-    console.log("Connected to mongo instance");
-  });
-  mongoose.connection.on("error", err => {
-    console.error("Error connecting to mongo", err);
-  });
-}
+const mongoUri =
+  "mongodb+srv://kowtowbilly:skarjackhammer455@cluster0-iccqs.mongodb.net/test?retryWrites=true&w=majority"; // process.env.mongoString
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true
+});
+mongoose.connection.on("connected", () => {
+  console.log("Connected to mongo instance");
+});
+mongoose.connection.on("error", err => {
+  console.error("Error connecting to mongo", err);
+});
 
 // app.post('/signin', (req, res) => {
 //   console.log("You just signed in!")
@@ -36,7 +36,7 @@ if (process.env.mongoString) {
 // })
 
 io.on("connection", socket => {
-  console.log("a user connected to socket :D", socket);
+  console.log("a user connected to socket :D");
   socket.on("join", ({ name, room }, callback) => {
     console.log(`user joined -- user: ${name}, room: ${room}`);
   });
