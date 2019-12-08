@@ -14,8 +14,7 @@ const io = require("socket.io")(server);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(authRoutes);
-const mongoUri =
-  "mongodb+srv://kowtowbilly:skarjackhammer455@cluster0-iccqs.mongodb.net/test?retryWrites=true&w=majority"; // process.env.mongoString
+const mongoUri = process.env.mongoString;
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useCreateIndex: true,
