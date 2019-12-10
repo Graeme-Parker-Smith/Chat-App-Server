@@ -1,20 +1,30 @@
 require("./src/models/User");
+require("./src/models/Channel");
 const express = require("express");
+// const keyword omitted to make app variable global and thus accessible in routes files
+app = express();
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
+// sets io variable on app object so other files can access with app.get("io")
+app.set("io", io);
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const authRoutes = require("./src/routes/authRoutes");
-const requireAuth = require("./src/middlewares/requireAuth");
 const cors = require("cors");
 
-const app = express();
-const server = require("http").Server(app);
-console.log(server);
-const io = require("socket.io")(server);
+
+const authRoutes = require("./src/routes/authRoutes");
+const channelRoutes = require("./src/routes/channelRoutes");
+const messageRoutes = require("./src/routes/messageRoutes");
+
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(authRoutes);
-const mongoUri = process.env.mongoString;
+app.use(channelRoutes);
+app.use(messageRoutes);
+// const mongoUri = process.env.mongoString;
+const mongoUri =
+  "mongodb+srv://kowtowbilly:skarjackhammer455@cluster0-iccqs.mongodb.net/test?retryWrites=true&w=majority";
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -25,20 +35,6 @@ mongoose.connection.on("connected", () => {
 });
 mongoose.connection.on("error", err => {
   console.error("Error connecting to mongo", err);
-});
-
-// app.post('/signin', (req, res) => {
-//   console.log("You just signed in!")
-// })
-// app.post('/signup', (req, res) => {
-//   console.log("You just signed up bruh???")
-// })
-
-io.on("connection", socket => {
-  console.log("a user connected to socket :D");
-  socket.on("join", ({ name, room }, callback) => {
-    console.log(`user joined -- user: ${name}, room: ${room}`);
-  });
 });
 
 app.get("/", (req, res) => {

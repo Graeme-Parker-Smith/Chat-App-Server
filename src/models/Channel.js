@@ -1,0 +1,27 @@
+const mongoose = require("mongoose");
+
+const messageSchema = new mongoose.Schema({
+  creator: {
+    type: String,
+    required: true
+  },
+  content: String,
+  time: String,
+  roomName: String
+});
+
+const channelSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  creator: {
+    type: String,
+    required: true
+  },
+  members: [String],
+  messages: [messageSchema]
+});
+
+mongoose.model("Channel", channelSchema);
