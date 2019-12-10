@@ -1,8 +1,7 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
-// const SCRT = process.env.JWT_SECRET;
-const SCRT = "supersecret";
+const SCRT = process.env.JWT_SECRET;
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;

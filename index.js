@@ -22,9 +22,8 @@ app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(channelRoutes);
 app.use(messageRoutes);
-// const mongoUri = process.env.mongoString;
-const mongoUri =
-  "mongodb+srv://kowtowbilly:skarjackhammer455@cluster0-iccqs.mongodb.net/test?retryWrites=true&w=majority";
+const mongoUri = process.env.mongoString;
+
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -35,11 +34,6 @@ mongoose.connection.on("connected", () => {
 });
 mongoose.connection.on("error", err => {
   console.error("Error connecting to mongo", err);
-});
-
-app.get("/", (req, res) => {
-  res.send("<h1>Greetings from the graeme-chat-app server!</h1>");
-  console.log("Get Root Route!");
 });
 
 const PORT = process.env.PORT || 3000;

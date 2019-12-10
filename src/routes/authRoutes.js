@@ -2,8 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const User = mongoose.model("User");
-// const SCRT = process.env.JWT_SECRET;
-const SCRT = "supersecret";
+const SCRT = process.env.JWT_SECRET;
 
 const router = express.Router();
 
