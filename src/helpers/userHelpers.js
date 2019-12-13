@@ -1,7 +1,7 @@
 const users = [];
 
 const addUser = ({ id, name, room }) => {
-
+  console.log("users array: ", users);
   const existingUser = users.find(
     user => user.room === room && user.name === name
   );
@@ -18,6 +18,7 @@ const addUser = ({ id, name, room }) => {
 };
 
 const removeUser = id => {
+  console.log("removing user")
   const index = users.findIndex(user => user.id === id);
 
   if (index !== -1) {
