@@ -24,6 +24,7 @@ app.use(channelRoutes);
 app.use(messageRoutes);
 const mongoUri = process.env.mongoString;
 
+
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useCreateIndex: true,

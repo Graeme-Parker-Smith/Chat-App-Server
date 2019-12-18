@@ -33,11 +33,11 @@ io.on("connection", socket => {
     socket.join(user.room);
 
     socket.emit("message", {
-      user: "admin",
+      user: "Admin",
       text: `${user.name}, welcome to the room ${user.room}`
     });
     socket.broadcast.to(user.room).emit("message", {
-      user: "admin",
+      user: "Admin",
       text: `${user.name} has joined!`
     });
 
@@ -59,7 +59,17 @@ io.on("connection", socket => {
 
   socket.on("leave", ({ room }) => {
     console.log("user has left");
-    removeUser(socket.id);
+    const user = removeUser(socket.id);
+    if (user) {
+      io.to(user.room).emit("message", {
+        user: "Admin",
+        text: `${user.name} has left.`
+      });
+      io.to(user.room).emit("roomData", {
+        room: user.room,
+        users: getUsersInRoom(user.room)
+      });
+    }
     socket.leave(room);
   });
 
@@ -67,7 +77,9 @@ io.on("connection", socket => {
     const channels = await Channel.find({ name: req.query.roomName });
     const thisChannel = channels[0];
     const username = req.user.username;
-    const messages = thisChannel.messages;
+    const messages = thisChannel.messages.slice(
+      Math.max(thisChannel.messages.length - 19, 1)
+    );
     // console.log("req.user is: ", req.user);
     const allUsers = getUsersInRoom(thisChannel);
 
@@ -99,8 +111,9 @@ io.on("connection", socket => {
       thisChannel.messages.push({ creator, content, roomName, time });
       await thisChannel.save();
 
+
       console.log("message saved!");
-      res.send(thisChannel);
+      res.send({ creator, content, roomName, time });
     } catch (err) {
       console.log("problem pushing message to channel");
       res.status(422).send({ error: err.message });

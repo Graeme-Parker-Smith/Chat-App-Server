@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const User = mongoose.model("User");
 const SCRT = process.env.JWT_SECRET;
 
+
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
   // authorization === 'Bearer ladklasjdlhgfkda'
