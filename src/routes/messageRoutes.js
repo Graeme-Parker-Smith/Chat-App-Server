@@ -77,11 +77,19 @@ io.on("connection", socket => {
     const channels = await Channel.find({ name: req.query.roomName });
     const thisChannel = channels[0];
     const username = req.user.username;
-    const messages = thisChannel.messages.slice(
-      Math.max(thisChannel.messages.length - 19, 1)
-    );
+    let messages;
+    if (req.query.stateLength) {
+      messages = thisChannel.messages.slice(
+        Math.max(thisChannel.messages.length - req.query.stateLength - 10, 1)
+      );
+    } else {
+      messages = thisChannel.messages.slice(
+        Math.max(thisChannel.messages.length - 19, 1)
+      );
+    }
+    console.log("messages fetched length is: ", messages.length);
     // console.log("req.user is: ", req.user);
-    const allUsers = getUsersInRoom(thisChannel);
+    // const allUsers = getUsersInRoom(thisChannel);
 
     res.send({ messages, username });
   });
@@ -110,7 +118,6 @@ io.on("connection", socket => {
 
       thisChannel.messages.push({ creator, content, roomName, time });
       await thisChannel.save();
-
 
       console.log("message saved!");
       res.send({ creator, content, roomName, time });
