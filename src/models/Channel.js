@@ -5,9 +5,12 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  avatar: String,
   content: String,
   time: String,
-  roomName: String
+  roomName: String,
+  isImage: Boolean,
+  isVideo: Boolean
 });
 
 const channelSchema = new mongoose.Schema({

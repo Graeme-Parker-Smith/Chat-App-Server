@@ -1,5 +1,7 @@
 require("./src/models/User");
 require("./src/models/Channel");
+const keys = require('./keys');
+const localMongoUri = keys.localMongoUri;
 const express = require("express");
 // const keyword omitted to make app variable global and thus accessible in routes files
 app = express();
@@ -11,19 +13,16 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-
 const authRoutes = require("./src/routes/authRoutes");
 const channelRoutes = require("./src/routes/channelRoutes");
 const messageRoutes = require("./src/routes/messageRoutes");
-
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(channelRoutes);
 app.use(messageRoutes);
-const mongoUri = process.env.mongoString;
-
+const mongoUri = process.env.mongoString || localMongoUri;
 
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,

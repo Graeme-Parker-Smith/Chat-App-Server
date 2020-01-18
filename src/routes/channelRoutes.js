@@ -11,11 +11,12 @@ router.use(requireAuth);
 router.get("/channels", async (req, res) => {
   const channels = await Channel.find({});
   // const user = await User.findById(req.user_id);
-  const username = req.user.username;
+  // console.log("req.user: ", req.user);
+  const currentUser = req.user;
   // console.log("req.user is: ", req.user);
-  console.log("username is: ", username);
+  console.log("username is: ", currentUser.username);
 
-  res.send({ channels, username });
+  res.send({ channels, currentUser });
 });
 
 router.post("/channels", async (req, res) => {

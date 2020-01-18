@@ -14,9 +14,6 @@ const {
   getUser,
   getUsersInRoom
 } = require("../helpers/userHelpers");
-// socket.on("join", ({ name, room }, callback) => {
-//   console.log(`user joined -- user: ${name}, room: ${room}`);
-// });
 
 io.on("connection", socket => {
   console.log("a user connected to socket :D");
@@ -28,18 +25,21 @@ io.on("connection", socket => {
     );
     const { error, user } = addUser({ name, room, id: socket.id });
 
-    if (error) return callback(error);
+    if (error) {
+      removeUser(name);
+      return callback(error);
+    }
 
     socket.join(user.room);
 
-    socket.emit("message", {
-      user: "Admin",
-      text: `${user.name}, welcome to the room ${user.room}`
-    });
-    socket.broadcast.to(user.room).emit("message", {
-      user: "Admin",
-      text: `${user.name} has joined!`
-    });
+    // socket.emit("message", {
+    //   user: "Admin",
+    //   text: `${user.name}, welcome to the room ${user.room}`
+    // });
+    // socket.broadcast.to(user.room).emit("message", {
+    //   user: "Admin",
+    //   text: `${user.name} has joined!`
+    // });
 
     io.to(user.room).emit("roomData", {
       room: user.room,
@@ -49,22 +49,25 @@ io.on("connection", socket => {
     callback();
   });
 
-  socket.on("sendMessage", ({ creator, content, roomName }) => {
+  socket.on("sendMessage", ({ creator, avatar, content, roomName, isImage, isVideo }) => {
     console.log("server receives message");
     io.in(roomName).emit("message", {
       user: creator,
-      text: content
+      avatar: avatar,
+      text: content,
+      isImage,
+      isVideo
     });
   });
 
-  socket.on("leave", ({ room }) => {
+  socket.on("leave", ({ room, name }) => {
     console.log("user has left");
-    const user = removeUser(socket.id);
+    const user = removeUser(name);
     if (user) {
-      io.to(user.room).emit("message", {
-        user: "Admin",
-        text: `${user.name} has left.`
-      });
+      // io.to(user.room).emit("message", {
+      //   user: "Admin",
+      //   text: `${user.name} has left.`
+      // });
       io.to(user.room).emit("roomData", {
         room: user.room,
         users: getUsersInRoom(user.room)
@@ -95,32 +98,21 @@ io.on("connection", socket => {
   });
 
   router.post("/messages", async (req, res) => {
-    const { creator, content, roomName, time } = req.body;
-    const userId = req.user._id;
-    // if (!name || !userId) {
-    //   return res.status(422).send({ error: "Channel must have a name and creator." });
-    // }
-    // creator: req.user._id, members: [req.user._id]
+    const { creator, content, roomName, time, isImage, isVideo } = req.body;
 
     console.log("roomName is: ", roomName);
     const filter = { name: roomName };
     try {
-      // const channel = new Channel({
-      //   name,
-      //   creator: userId,
-      //   members: [],
-      //   messages: []
-      // });
-      // await channel.save();
       const channels = await Channel.find(filter);
       const thisChannel = channels[0];
-      const allUsers = getUsersInRoom(thisChannel);
+      const users = await User.find({ username: creator });
+      const thisUser = users[0];
 
-      thisChannel.messages.push({ creator, content, roomName, time });
+      thisChannel.messages.push({ creator, avatar: thisUser.avatar, content, roomName, time, isImage, isVideo });
       await thisChannel.save();
 
       console.log("message saved!");
-      res.send({ creator, content, roomName, time });
+      res.send({ creator, avatar: thisUser.avatar, content, roomName, time, isImage, isVideo });
     } catch (err) {
       console.log("problem pushing message to channel");
       res.status(422).send({ error: err.message });
