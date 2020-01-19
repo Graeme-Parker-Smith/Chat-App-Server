@@ -54,9 +54,11 @@ router.post("/updateuser", async (req, res) => {
 
   try {
     // const users = await User.find({ username });
+    const foundUser = await User.findOne({ username });
+    console.log("foundUser", foundUser)
     const updatedUser = await User.findOneAndUpdate(
       { username },
-      { username: newUsername, password: newPassword, avatar: newAvatar },
+      { username: newUsername || foundUser.username, password: newPassword || foundUser.password, avatar: newAvatar || foundUser.avatar },
       { returnNewDocument: true }
     );
     console.log(updatedUser);
