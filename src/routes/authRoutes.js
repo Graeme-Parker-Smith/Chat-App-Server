@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const User = mongoose.model("User");
+const Channel = mongoose.model("Channel");
 const keys = require("../../keys");
 const localSCRT = keys.localSCRT;
 const SCRT = process.env.JWT_SECRET || localSCRT;
@@ -62,6 +63,7 @@ router.post("/updateuser", async (req, res) => {
       { returnNewDocument: true }
     );
     console.log(updatedUser);
+    // Channel.updateMany({}, )
     res.send({ userData: updatedUser });
   } catch (err) {
     console.log(err);
