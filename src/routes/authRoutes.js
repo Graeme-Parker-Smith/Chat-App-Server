@@ -49,18 +49,22 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-// router.get("/userdata", async (req, res) => {
-//   console.log("req is: ", req);
-//   const username = req.user.username;
+router.post("/updateuser", async (req, res) => {
+  const { username, newUsername, newPassword, newAvatar } = req.body;
 
-//   try {
-//     const users = await User.find({ username });
-//     const thisUser = users[0];
-
-//     res.send({ userData: thisUser });
-//   } catch (err) {
-//     return res.status(422).send({ error: "could not find user" });
-//   }
-// });
+  try {
+    // const users = await User.find({ username });
+    const updatedUser = await User.findOneAndUpdate(
+      { username },
+      { username: newUsername, password: newPassword, avatar: newAvatar },
+      { returnNewDocument: true }
+    );
+    console.log(updatedUser);
+    res.send({ userData: updatedUser });
+  } catch (err) {
+    console.log(err);
+    return res.status(422).send({ error: "could not find user" });
+  }
+});
 
 module.exports = router;
