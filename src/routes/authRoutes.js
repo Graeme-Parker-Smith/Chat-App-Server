@@ -54,9 +54,7 @@ router.post("/updateuser", async (req, res) => {
   const { username, newUsername, newPassword, newAvatar } = req.body;
 
   try {
-    // const users = await User.find({ username });
     const foundUser = await User.findOne({ username });
-    // console.log("foundUser", foundUser);
     const updatedUser = await User.findOneAndUpdate(
       { username },
       {
@@ -66,30 +64,13 @@ router.post("/updateuser", async (req, res) => {
       },
       { returnNewDocument: true }
     );
-    // console.log(updatedUser);
-    // await Channel.updateMany(
-    //   {},
-    //   {
-    //     messages: messages.map(message => {
-    //       if (message.creator === foundUser.username) {
-    //         message.creator = updatedUser.username;
-    //         message.avatar = updatedUser.avatar;
-    //       }
-    //       return message;
-    //     })
-    //   }
-    // );
-
-    // Channel.update({});
 
     let channels = await Channel.find({});
-    // console.log(channels);
     await channels.forEach(async function(doc) {
       console.log("CHANNEL NAME", doc.name);
       let newMessages = doc.messages.map(message => {
         if (message.creator === foundUser.username) {
           console.log("old message", message);
-          // console.log("UPDATEDUSER.USERNAME", newUsername);
           message.creator = newUsername;
           message.avatar = newAvatar;
           console.log("new message", message);
@@ -99,24 +80,8 @@ router.post("/updateuser", async (req, res) => {
       console.log("DOC.name", doc.name);
 
       await Channel.update({ name: doc.name }, { $set: { messages: newMessages } });
-      // Channel.findOneAndUpdate(
-      //   { name: doc.name },
-      //   {
-      //     messages: newMessages
-      //   },
-      //   { returnNewDocument: true }
-      // );
-      // console.log("updatedChannel", updatedChannel)
-      // let messages = doc.messages;
-      // messages = messages.map(message => {
-      //   if (message.creator === foundUser.username) {
-      //     message.creator = updatedUser.username;
-      //     message.avatar = updatedUser.avatar;
-      //   }
-      //   return message;
-      // });
+
     });
-    // await Channel.update({}, { $set: { messages: [] } }, { multi: true });
     res.send({ userData: updatedUser });
   } catch (err) {
     console.log(err);
