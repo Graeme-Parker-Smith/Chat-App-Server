@@ -49,16 +49,19 @@ io.on("connection", socket => {
     callback();
   });
 
-  socket.on("sendMessage", ({ creator, avatar, content, roomName, isImage, isVideo }) => {
-    console.log("server receives message");
-    io.in(roomName).emit("message", {
-      user: creator,
-      avatar: avatar,
-      text: content,
-      isImage,
-      isVideo
-    });
-  });
+  socket.on(
+    "sendMessage",
+    ({ creator, avatar, content, roomName, isImage, isVideo }) => {
+      console.log("server receives message");
+      io.in(roomName).emit("message", {
+        user: creator,
+        avatar: avatar,
+        text: content,
+        isImage,
+        isVideo
+      });
+    }
+  );
 
   socket.on("leave", ({ room, name }) => {
     console.log("user has left");
@@ -85,6 +88,8 @@ io.on("connection", socket => {
       messages = thisChannel.messages.slice(
         Math.max(thisChannel.messages.length - req.query.stateLength - 10, 1)
       );
+    } else if (thisChannel.messages.length < 20) {
+      messages = thisChannel.messages;
     } else {
       messages = thisChannel.messages.slice(
         Math.max(thisChannel.messages.length - 19, 1)
@@ -93,7 +98,6 @@ io.on("connection", socket => {
     console.log("messages fetched length is: ", messages.length);
     // console.log("req.user is: ", req.user);
     // const allUsers = getUsersInRoom(thisChannel);
-
     res.send({ messages, username });
   });
 
@@ -108,11 +112,27 @@ io.on("connection", socket => {
       const users = await User.find({ username: creator });
       const thisUser = users[0];
 
-      thisChannel.messages.push({ creator, avatar: thisUser.avatar, content, roomName, time, isImage, isVideo });
+      thisChannel.messages.push({
+        creator,
+        avatar: thisUser.avatar,
+        content,
+        roomName,
+        time,
+        isImage,
+        isVideo
+      });
       await thisChannel.save();
 
       console.log("message saved!");
-      res.send({ creator, avatar: thisUser.avatar, content, roomName, time, isImage, isVideo });
+      res.send({
+        creator,
+        avatar: thisUser.avatar,
+        content,
+        roomName,
+        time,
+        isImage,
+        isVideo
+      });
     } catch (err) {
       console.log("problem pushing message to channel");
       res.status(422).send({ error: err.message });
