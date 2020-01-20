@@ -42,6 +42,26 @@ userSchema.pre("save", function(next) {
     });
   });
 });
+userSchema.pre("findOneAndUpdate", function(next) {
+  // const user = this._update;
+  // if (!user.isModified("password")) {
+  //   return next();
+  // }
+
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) {
+      return next(err);
+    }
+
+    bcrypt.hash(this._update.password, salt, (err, hash) => {
+      if (err) {
+        return next(err);
+      }
+      this._update.password = hash;
+      next();
+    });
+  });
+});
 
 // adds a method to each user to automatically compare user submitted password to password stored in DB
 userSchema.methods.comparePassword = function(candidatePassword) {

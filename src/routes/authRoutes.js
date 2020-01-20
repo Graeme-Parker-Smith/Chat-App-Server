@@ -64,6 +64,7 @@ router.post("/updateuser", async (req, res) => {
       },
       { returnNewDocument: true }
     );
+    // await foundUser.save();
 
     let channels = await Channel.find({});
     await channels.forEach(async function(doc) {
@@ -79,8 +80,10 @@ router.post("/updateuser", async (req, res) => {
       });
       console.log("DOC.name", doc.name);
 
-      await Channel.update({ name: doc.name }, { $set: { messages: newMessages } });
-
+      await Channel.update(
+        { name: doc.name },
+        { $set: { messages: newMessages } }
+      );
     });
     res.send({ userData: updatedUser });
   } catch (err) {
