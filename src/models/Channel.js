@@ -24,7 +24,10 @@ const channelSchema = new mongoose.Schema({
     required: true
   },
   members: [String],
-  messages: [messageSchema]
+  messages: [messageSchema],
+  avatar: {
+    type: String
+  },
 });
 
 mongoose.model("Channel", channelSchema);

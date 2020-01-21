@@ -20,7 +20,7 @@ router.get("/channels", async (req, res) => {
 });
 
 router.post("/channels", async (req, res) => {
-  const { name, creator } = req.body;
+  const { name, creator, avatar } = req.body;
   if (!name || !creator) {
     return res
       .status(422)
@@ -28,13 +28,15 @@ router.post("/channels", async (req, res) => {
   }
   console.log("channel name is: ", name);
   console.log("creator name is: ", creator);
+  console.log("channel avatar is: ", avatar);
   // creator: req.user._id, members: [req.user._id]
   try {
     const channel = new Channel({
       name,
       creator,
       members: [creator],
-      messages: []
+      messages: [],
+      avatar: avatar || ""
     });
     await channel.save();
     console.log("Channel saved!");
