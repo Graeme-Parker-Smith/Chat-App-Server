@@ -48,4 +48,23 @@ router.post("/channels", async (req, res) => {
   }
 });
 
+router.post("/updatechannel", async (req, res) => {
+  const { username, name, avatar } = req.body;
+  try {
+    const foundChannel = await Channel.find({ name });
+    const updatedChannel = Channel.findOneAndUpdate(
+      { name },
+      {
+        name: name || foundChannel.name,
+        avatar: avatar || foundChannel.avatar
+      },
+      { returnNewDocument: true }
+    );
+    res.send({ updatedChannel });
+  } catch (err) {
+    console.error(err);
+    return res.status(422).send({ error: err });
+  }
+});
+
 module.exports = router;
