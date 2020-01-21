@@ -1,7 +1,7 @@
 require("./src/models/User");
 require("./src/models/Channel");
-const keys = require('./keys');
-const localMongoUri = keys.localMongoUri;
+let localMongoUri;
+// localMongoUri = require('./keys').localMongoUri;
 const express = require("express");
 // const keyword omitted to make app variable global and thus accessible in routes files
 app = express();

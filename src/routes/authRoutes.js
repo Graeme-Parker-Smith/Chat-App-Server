@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const User = mongoose.model("User");
 const Channel = mongoose.model("Channel");
-const keys = require("../../keys");
-const localSCRT = keys.localSCRT;
+let localSCRT;
+// localSCRT = require("../../keys").localSCRT;
 const SCRT = process.env.JWT_SECRET || localSCRT;
 
 const router = express.Router();
