@@ -47,6 +47,35 @@ router.post("/channels", async (req, res) => {
   }
 });
 
+router.post("/privatechannels", async (req, res) => {
+  const { name, creator, avatar } = req.body;
+  if (!name || !creator) {
+    return res
+      .status(422)
+      .send({ error: "Channel must have a name and creator." });
+  }
+  console.log("channel name is: ", name);
+  console.log("creator name is: ", creator);
+  console.log("channel avatar is: ", avatar);
+  // creator: req.user._id, members: [req.user._id]
+  try {
+    const channel = new PrivateChannel({
+      name,
+      creator,
+      messages: [],
+      members: [creator],
+      avatar: avatar || ""
+    });
+    await channel.save();
+    console.log("Private Channel saved!");
+    console.log(channel);
+    res.send(channel);
+  } catch (err) {
+    console.log("problem creating channel");
+    res.status(422).send({ error: err.message });
+  }
+});
+
 router.post("/updatechannel", async (req, res) => {
   const { username, prevName, newName, newAvatar } = req.body;
   try {
