@@ -34,7 +34,6 @@ router.post("/channels", async (req, res) => {
     const channel = new Channel({
       name,
       creator,
-      members: [creator],
       messages: [],
       avatar: avatar || ""
     });

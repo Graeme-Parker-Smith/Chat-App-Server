@@ -13,7 +13,7 @@ const messageSchema = new mongoose.Schema({
   isVideo: Boolean
 });
 
-const channelSchema = new mongoose.Schema({
+const privateChannelSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -23,10 +23,11 @@ const channelSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  members: [String],
   messages: [messageSchema],
   avatar: {
     type: String
   },
 });
 
-mongoose.model("Channel", channelSchema);
+mongoose.model("PrivateChannel", privateChannelSchema);
