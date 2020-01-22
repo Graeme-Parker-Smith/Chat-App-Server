@@ -51,7 +51,7 @@ router.post("/channels", async (req, res) => {
 router.post("/updatechannel", async (req, res) => {
   const { username, prevName, newName, newAvatar } = req.body;
   try {
-    const foundChannel = await Channel.find({ name: prevName });
+    const foundChannel = await Channel.findOne({ name: prevName });
     const updatedChannel = await Channel.findOneAndUpdate(
       { name: prevName },
       {
@@ -64,6 +64,31 @@ router.post("/updatechannel", async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(422).send({ error: err });
+  }
+});
+
+router.post("/addfriend", async (req, res) => {
+  const { username, friendName } = req.body;
+  console.log("friendName", friendName);
+  try {
+    const currentUser = await User.findOne({ username });
+    console.log("currentUser.username", currentUser.username);
+    const friendToAdd = await User.findOne({ username: friendName });
+    console.log("friendToAdd", friendToAdd);
+    const updatedUser = await User.updateOne(
+      { _id: currentUser._id },
+      { $push: { friends: friendToAdd } },
+      { returnNewDocument: true }
+    );
+    console.log(
+      `${friendToAdd.username} added as a friend! CurrentUser data is now: ${updatedUser}`
+    );
+    res.send({ currentUser: updatedUser });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(422)
+      .send({ error: "could not find user with that name" });
   }
 });
 
