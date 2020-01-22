@@ -52,18 +52,38 @@ router.post("/signin", async (req, res) => {
 
 router.post("/updateuser", async (req, res) => {
   const { username, newUsername, newPassword, newAvatar } = req.body;
-
+  console.log("newPassword is: ", newPassword);
+  if (!newPassword) {
+    console.log("newpassword is falsy");
+  }
   try {
     const foundUser = await User.findOne({ username });
-    const updatedUser = await User.findOneAndUpdate(
-      { username },
-      {
-        username: newUsername || foundUser.username,
-        password: newPassword || foundUser.password,
-        avatar: newAvatar || foundUser.avatar
-      },
-      { returnNewDocument: true }
-    );
+    let updatedUser;
+    if (!newPassword) {
+      updatedUser = await User.findOneAndUpdate(
+        { username },
+        {
+          username: newUsername || foundUser.username
+        },
+        { returnNewDocument: true }
+      );
+      await User.update(
+        { username },
+        {
+          avatar: newAvatar || foundUser.avatar
+        }
+      );
+    } else {
+      updatedUser = await User.findOneAndUpdate(
+        { username },
+        {
+          username: newUsername || foundUser.username,
+          password: newPassword,
+          avatar: newAvatar || foundUser.avatar
+        },
+        { returnNewDocument: true }
+      );
+    }
     // await foundUser.save();
 
     let channels = await Channel.find({});

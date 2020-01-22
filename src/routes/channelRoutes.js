@@ -49,14 +49,14 @@ router.post("/channels", async (req, res) => {
 });
 
 router.post("/updatechannel", async (req, res) => {
-  const { username, name, avatar } = req.body;
+  const { username, prevName, newName, newAvatar } = req.body;
   try {
-    const foundChannel = await Channel.find({ name });
-    const updatedChannel = Channel.findOneAndUpdate(
-      { name },
+    const foundChannel = await Channel.find({ name: prevName });
+    const updatedChannel = await Channel.findOneAndUpdate(
+      { name: prevName },
       {
-        name: name || foundChannel.name,
-        avatar: avatar || foundChannel.avatar
+        name: newName || foundChannel.name,
+        avatar: newAvatar || foundChannel.avatar
       },
       { returnNewDocument: true }
     );

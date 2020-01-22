@@ -43,10 +43,9 @@ userSchema.pre("save", function(next) {
   });
 });
 userSchema.pre("findOneAndUpdate", function(next) {
-  // const user = this._update;
-  // if (!user.isModified("password")) {
-  //   return next();
-  // }
+  if (!this._update.password) {
+    return next();
+  }
 
   bcrypt.genSalt(10, (err, salt) => {
     if (err) {
