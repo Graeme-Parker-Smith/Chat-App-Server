@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const requireAuth = require("../middlewares/requireAuth");
 const Channel = mongoose.model("Channel");
+const PrivateChannel = mongoose.model("PrivateChannel");
 const User = mongoose.model("User");
 
 const router = express.Router();
@@ -9,14 +10,18 @@ const router = express.Router();
 router.use(requireAuth);
 
 router.get("/channels", async (req, res) => {
+  const currentUser = req.user;
+  // console.log("currentUser", req);
   const channels = await Channel.find({});
+  const privateChannels = await PrivateChannel.find({
+    members: currentUser.username
+  });
   // const user = await User.findById(req.user_id);
   // console.log("req.user: ", req.user);
-  const currentUser = req.user;
   // console.log("req.user is: ", req.user);
   console.log("username is: ", currentUser.username);
 
-  res.send({ channels, currentUser });
+  res.send({ channels, privateChannels, currentUser });
 });
 
 router.post("/channels", async (req, res) => {
@@ -117,6 +122,23 @@ router.post("/addfriend", async (req, res) => {
     return res
       .status(422)
       .send({ error: "could not find user with that name" });
+  }
+});
+
+router.post("/invite", async (req, res) => {
+  const { invitee, roomName } = req.body;
+  console.log("roomName", roomName);
+  try {
+    const updatedChannel = await PrivateChannel.updateOne(
+      { name: roomName },
+      { $push: { members: invitee } }
+    );
+    console.log(invitee, "added!");
+    console.log("updatedChannel", updatedChannel);
+    res.send({ updatedChannel });
+  } catch (err) {
+    console.log(err);
+    return res.stats(422).send({ error: "could not find user with that name" });
   }
 });
 
