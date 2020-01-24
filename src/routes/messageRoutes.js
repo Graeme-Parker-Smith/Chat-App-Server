@@ -51,15 +51,35 @@ io.on("connection", socket => {
 
   socket.on(
     "sendMessage",
-    ({ creator, avatar, content, roomName, isImage, isVideo }) => {
+    ({ creator, avatar, content, roomName, time, isImage, isVideo }) => {
       console.log("server receives message");
       io.in(roomName).emit("message", {
         user: creator,
         avatar: avatar,
         text: content,
+        time,
         isImage,
         isVideo
       });
+
+    const filter = { name: roomName };
+    try {
+      const channels = await Channel.find(filter);
+      const thisChannel = channels[0];
+      thisChannel.messages.push({
+        creator,
+        avatar,
+        content,
+        roomName,
+        time,
+        isImage,
+        isVideo
+      });
+      await thisChannel.save();
+      console.log("message saved!");
+    } catch (err) {
+      console.log("problem pushing message to channel");
+    }
     }
   );
 
