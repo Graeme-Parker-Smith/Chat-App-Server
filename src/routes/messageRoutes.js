@@ -51,7 +51,7 @@ io.on("connection", socket => {
 
   socket.on(
     "sendMessage",
-    ({ creator, avatar, content, roomName, time, isImage, isVideo }) => {
+    ({ creator, avatar, content, roomName, time, isImage, isVideo, roomType }) => {
       console.log("server receives message");
       io.in(roomName).emit("message", {
         user: creator,
@@ -64,7 +64,14 @@ io.on("connection", socket => {
 
     const filter = { name: roomName };
     try {
-      const channels = await Channel.find(filter);
+      let channels;
+      if (roomType === "public"){
+        channels = await Channel.find(filter);
+      } else if (roomType === "private") {
+        channels = await PrivateChannel.find(filter);
+      } else if (roomType === "pm") {
+        channels = await PM.find(filter);
+      }
       const thisChannel = channels[0];
       // not recommended. Use Channel.updateOne instead
       thisChannel.messages.push({
