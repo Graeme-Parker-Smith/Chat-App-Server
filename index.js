@@ -1,6 +1,7 @@
 require("./src/models/User");
 require("./src/models/Channel");
 require("./src/models/PrivateChannel");
+require("./src/models/PM");
 let localMongoUri;
 localMongoUri = require('./keys').localMongoUri;
 const express = require("express");
