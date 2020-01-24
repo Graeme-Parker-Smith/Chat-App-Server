@@ -66,6 +66,7 @@ io.on("connection", socket => {
     try {
       const channels = await Channel.find(filter);
       const thisChannel = channels[0];
+      // not recommended. Use Channel.updateOne instead
       thisChannel.messages.push({
         creator,
         avatar,
