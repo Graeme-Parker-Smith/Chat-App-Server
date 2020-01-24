@@ -101,6 +101,10 @@ io.on("connection", socket => {
     res.send({ messages, username });
   });
 
+  router.post("/pm", async (req, res) => {
+    console.log("server receives pm");
+  });
+
   router.post("/messages", async (req, res) => {
     const { creator, content, roomName, time, isImage, isVideo } = req.body;
 
