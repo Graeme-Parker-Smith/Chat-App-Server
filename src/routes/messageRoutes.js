@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const requireAuth = require("../middlewares/requireAuth");
 const Channel = mongoose.model("Channel");
 const User = mongoose.model("User");
+const PM = mongoose.model("PM");
 
 const router = express.Router();
 const io = app.get("io");
@@ -51,7 +52,17 @@ io.on("connection", socket => {
 
   socket.on(
     "sendMessage",
-    ({ creator, avatar, content, roomName, time, isImage, isVideo, roomType }) => {
+    async ({
+      creator,
+      avatar,
+      content,
+      roomName,
+      time,
+      isImage,
+      isVideo,
+      roomType,
+      room_id
+    }) => {
       console.log("server receives message");
       io.in(roomName).emit("message", {
         user: creator,
@@ -62,32 +73,37 @@ io.on("connection", socket => {
         isVideo
       });
 
-    const filter = { name: roomName };
-    try {
-      let channels;
-      if (roomType === "public"){
-        channels = await Channel.find(filter);
-      } else if (roomType === "private") {
-        channels = await PrivateChannel.find(filter);
-      } else if (roomType === "pm") {
-        channels = await PM.find(filter);
+      const filter = { _id: room_id };
+      try {
+        let channels;
+        if (roomType === "public") {
+          channels = await Channel.find(filter);
+        } else if (roomType === "private") {
+          channels = await PrivateChannel.find(filter);
+        } else if (roomType === "pm") {
+          channels = await PM.find(filter);
+        } else {
+          console.log(
+            "no channels could be found with that filter and/or roomType"
+          );
+          return;
+        }
+        const thisChannel = channels[0];
+        // not recommended. Use Channel.updateOne instead
+        thisChannel.messages.push({
+          creator,
+          avatar,
+          content,
+          roomName,
+          time,
+          isImage,
+          isVideo
+        });
+        await thisChannel.save();
+        console.log("message saved!");
+      } catch (err) {
+        console.log("problem pushing message to channel");
       }
-      const thisChannel = channels[0];
-      // not recommended. Use Channel.updateOne instead
-      thisChannel.messages.push({
-        creator,
-        avatar,
-        content,
-        roomName,
-        time,
-        isImage,
-        isVideo
-      });
-      await thisChannel.save();
-      console.log("message saved!");
-    } catch (err) {
-      console.log("problem pushing message to channel");
-    }
     }
   );
 
