@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const requireAuth = require("../middlewares/requireAuth");
 const Channel = mongoose.model("Channel");
 const PrivateChannel = mongoose.model("PrivateChannel");
+const PM = mongoose.model("PM");
 const User = mongoose.model("User");
 
 const router = express.Router();
@@ -16,12 +17,16 @@ router.get("/channels", async (req, res) => {
   const privateChannels = await PrivateChannel.find({
     members: currentUser.username
   });
+  const PMs = await PM.find({
+    members: currentUser.username
+  });
+
   // const user = await User.findById(req.user_id);
   // console.log("req.user: ", req.user);
   // console.log("req.user is: ", req.user);
   console.log("username is: ", currentUser.username);
 
-  res.send({ channels, privateChannels, currentUser });
+  res.send({ channels, privateChannels, PMs, currentUser });
 });
 
 router.post("/channels", async (req, res) => {
