@@ -126,7 +126,19 @@ io.on("connection", socket => {
   });
 
   router.get("/messages", async (req, res) => {
-    const channels = await Channel.find({ name: req.query.roomName });
+    let channels;
+    if (roomType === "public") {
+      channels = await Channel.find(filter);
+    } else if (roomType === "private") {
+      channels = await PrivateChannel.find(filter);
+    } else if (roomType === "pm") {
+      channels = await PM.find(filter);
+    } else {
+      console.log(
+        "no channels could be found with that filter and/or roomType"
+      );
+      return;
+    }
     const thisChannel = channels[0];
     const username = req.user.username;
     let messages;
