@@ -73,6 +73,8 @@ io.on("connection", socket => {
         isVideo
       });
 
+      console.log("room_id", room_id);
+
       const filter = { _id: room_id };
       try {
         let channels;
@@ -102,7 +104,7 @@ io.on("connection", socket => {
         await thisChannel.save();
         console.log("message saved!");
       } catch (err) {
-        console.log("problem pushing message to channel");
+        console.log(err);
       }
     }
   );
