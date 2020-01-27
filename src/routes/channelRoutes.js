@@ -21,9 +21,6 @@ router.get("/channels", async (req, res) => {
     members: currentUser.username
   });
 
-  // const user = await User.findById(req.user_id);
-  // console.log("req.user: ", req.user);
-  // console.log("req.user is: ", req.user);
   console.log("username is: ", currentUser.username);
 
   res.send({ channels, privateChannels, PMs, currentUser });
