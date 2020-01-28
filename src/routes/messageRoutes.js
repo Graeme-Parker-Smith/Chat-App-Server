@@ -1,8 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const requireAuth = require("../middlewares/requireAuth");
-const Channel = mongoose.model("Channel");
 const User = mongoose.model("User");
+const Channel = mongoose.model("Channel");
+const PrivateChannel = mongoose.model("PrivateChannel");
 const PM = mongoose.model("PM");
 
 const router = express.Router();
@@ -126,6 +127,8 @@ io.on("connection", socket => {
   });
 
   router.get("/messages", async (req, res) => {
+    const {roomName, roomType, room_id} = req.query;
+    const filter = { _id: room_id };
     let channels;
     if (roomType === "public") {
       channels = await Channel.find(filter);
