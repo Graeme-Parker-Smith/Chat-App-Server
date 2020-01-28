@@ -33,6 +33,7 @@ io.on("connection", socket => {
     }
 
     socket.join(user.room);
+    console.log("user.room", getUsersInRoom(user.room));
 
     // socket.emit("message", {
     //   user: "Admin",
@@ -65,7 +66,7 @@ io.on("connection", socket => {
       room_id
     }) => {
       console.log("server receives message");
-      io.in(roomName).emit("message", {
+      io.in(room_id).emit("message", {
         user: creator,
         avatar: avatar,
         text: content,
@@ -84,7 +85,7 @@ io.on("connection", socket => {
         } else if (roomType === "private") {
           channels = await PrivateChannel.find(filter);
         } else if (roomType === "pm") {
-          channels = await PM.find(filter);
+          channels = await PM.find({ members: { $all: room_id } });
         } else {
           console.log(
             "no channels could be found with that filter and/or roomType"
@@ -127,7 +128,7 @@ io.on("connection", socket => {
   });
 
   router.get("/messages", async (req, res) => {
-    const {roomName, roomType, room_id} = req.query;
+    const { roomName, roomType, room_id } = req.query;
     const filter = { _id: room_id };
     let channels;
     if (roomType === "public") {
@@ -135,7 +136,7 @@ io.on("connection", socket => {
     } else if (roomType === "private") {
       channels = await PrivateChannel.find(filter);
     } else if (roomType === "pm") {
-      channels = await PM.find(filter);
+      channels = await PM.find({ members: { $all: room_id } });
     } else {
       console.log(
         "no channels could be found with that filter and/or roomType"

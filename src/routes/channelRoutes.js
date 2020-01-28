@@ -123,10 +123,12 @@ router.post("/addfriend", async (req, res) => {
     );
     const newPM = new PM({
       messages: [],
-      members: [username, friendName],
+      members: [username, friendName]
     });
     await newPM.save();
-    res.send({ currentUser: updatedUser });
+    const PMs = await PM.find({});
+    console.log("PMs is: ", PMs);
+    res.send({ currentUser: updatedUser, PMs });
   } catch (err) {
     console.log(err);
     return res
