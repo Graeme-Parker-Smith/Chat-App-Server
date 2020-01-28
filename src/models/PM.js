@@ -16,18 +16,12 @@ const messageSchema = new mongoose.Schema({
 const pmSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
-    unique: true
   },
   creator: {
     type: String,
-    required: true
   },
   members: [String],
   messages: [messageSchema],
-  avatar: {
-    type: String
-  },
 });
 
 mongoose.model("PM", pmSchema);

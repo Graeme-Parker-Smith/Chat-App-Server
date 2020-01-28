@@ -121,6 +121,11 @@ router.post("/addfriend", async (req, res) => {
     console.log(
       `${friendToAdd.username} added as a friend! CurrentUser data is now: ${updatedUser}`
     );
+    const newPM = new PM({
+      messages: [],
+      members: [username, friendName],
+    });
+    await newPM.save();
     res.send({ currentUser: updatedUser });
   } catch (err) {
     console.log(err);
