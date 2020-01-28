@@ -11,8 +11,11 @@ const router = express.Router();
 router.use(requireAuth);
 
 router.get("/channels", async (req, res) => {
+  console.log("req.user is: ", req.user);
+  if (!req.user) {
+    return res.send({ error: "user could not be found" });
+  }
   const currentUser = req.user;
-  // console.log("currentUser", req);
   const channels = await Channel.find({});
   const privateChannels = await PrivateChannel.find({
     members: currentUser.username
