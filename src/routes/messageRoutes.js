@@ -141,7 +141,6 @@ io.on('connection', socket => {
 					title: sender,
 					body: messageBody,
 				});
-				console.log(response);
 			});
 		} catch (err) {
 			console.log(err);
