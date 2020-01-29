@@ -50,6 +50,29 @@ router.post("/signin", async (req, res) => {
   }
 });
 
+router.post("/pushtoken", async (req, res) => {
+  try {
+    const { token, user } = req.body;
+    const foundUser = await User.findOne({ _id: user._id });
+    if (!foundUser) {
+      console.log("could not find user");
+      return res.send({ userData: foundUser });
+    }
+    if (foundUser.tokens.includes(token)) {
+      console.log("user already has token");
+      return res.send({ userData: foundUser });
+    }
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: user._id },
+      { $push: { tokens: token } },
+      { returnNewDocument: true }
+    );
+    res.send({ userData: updatedUser });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 router.post("/updateuser", async (req, res) => {
   const { username, newUsername, newPassword, newAvatar } = req.body;
   console.log("newPassword is: ", newPassword);

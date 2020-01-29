@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema({
   },
   friends: {
     type: Array
+  },
+  tokens: {
+    type: Array
   }
 });
 
