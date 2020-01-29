@@ -6,7 +6,7 @@ const messageSchema = new mongoose.Schema({
     required: true
   },
   avatar: String,
-  content: String,
+  content: Buffer,
   time: String,
   roomName: String,
   isImage: Boolean,
