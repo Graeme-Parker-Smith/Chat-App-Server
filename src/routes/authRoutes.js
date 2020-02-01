@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
+const fs = require('fs');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = mongoose.model('User');
