@@ -1,4 +1,6 @@
 const express = require('express');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = mongoose.model('User');
@@ -9,9 +11,9 @@ const SCRT = process.env.JWT_SECRET || localSCRT;
 
 const router = express.Router();
 
-router.post('/signup', async (req, res) => {
+router.post('/signup', upload.single('photo'), async (req, res) => {
 	// res.send("You made a post request on heroku!")
-	// console.log(req.body);
+	console.log('req.file: ', req.file);
 	const { username, password, avatar } = req.body;
 	// const user = new User({ username, password });
 	// await user.save();
@@ -68,8 +70,8 @@ router.post('/pushtoken', async (req, res) => {
 		);
 		res.send({ userData: updatedUser });
 	} catch (err) {
-    console.log("err is: ", err);
-    res.send(err)
+		console.log('err is: ', err);
+		res.send(err);
 	}
 });
 
