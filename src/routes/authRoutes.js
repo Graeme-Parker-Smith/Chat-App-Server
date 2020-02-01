@@ -15,6 +15,15 @@ const router = express.Router();
 router.post('/signup', upload.single('photo'), async (req, res) => {
 	// res.send("You made a post request on heroku!")
 	console.log('req.file: ', req.file);
+	let bitmap = fs.readFileSync(req.file.path);
+	let b64 = new Buffer(bitmap).toString('base64');
+	console.log('received data: ' + b64);
+	// fs.readFile(req.file.path, { encoding: null }, function(err, data) {
+	// 	if (!err) {
+	// 	} else {
+	// 		console.log(err);
+	// 	}
+	// });
 	const { username, password, avatar } = req.body;
 	// const user = new User({ username, password });
 	// await user.save();
