@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = mongoose.model('User');
 const Channel = mongoose.model('Channel');
+const Img = mongoose.model('Img');
 let localSCRT;
 localSCRT = require('../../keys').localSCRT;
 const SCRT = process.env.JWT_SECRET || localSCRT;

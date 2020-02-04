@@ -1,23 +1,24 @@
-require("./src/models/User");
-require("./src/models/Channel");
-require("./src/models/PrivateChannel");
-require("./src/models/PM");
+require('./src/models/User');
+require('./src/models/Channel');
+require('./src/models/PrivateChannel');
+require('./src/models/PM');
+require('./src/models/Img');
 let localMongoUri;
 localMongoUri = require('./keys').localMongoUri;
-const express = require("express");
+const express = require('express');
 // const keyword omitted to make app variable global and thus accessible in routes files
 app = express();
-const server = require("http").Server(app);
-const io = require("socket.io")(server);
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 // sets io variable on app object so other files can access with app.get("io")
-app.set("io", io);
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+app.set('io', io);
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
-const authRoutes = require("./src/routes/authRoutes");
-const channelRoutes = require("./src/routes/channelRoutes");
-const messageRoutes = require("./src/routes/messageRoutes");
+const authRoutes = require('./src/routes/authRoutes');
+const channelRoutes = require('./src/routes/channelRoutes');
+const messageRoutes = require('./src/routes/messageRoutes');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -27,15 +28,15 @@ app.use(messageRoutes);
 const mongoUri = process.env.mongoString || localMongoUri;
 
 mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true
+	useNewUrlParser: true,
+	useCreateIndex: true,
+	useUnifiedTopology: true,
 });
-mongoose.connection.on("connected", () => {
-  console.log("Connected to mongo instance");
+mongoose.connection.on('connected', () => {
+	console.log('Connected to mongo instance');
 });
-mongoose.connection.on("error", err => {
-  console.error("Error connecting to mongo", err);
+mongoose.connection.on('error', err => {
+	console.error('Error connecting to mongo', err);
 });
 
 const PORT = process.env.PORT || 3000;
