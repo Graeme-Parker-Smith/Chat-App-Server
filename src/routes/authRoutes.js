@@ -15,7 +15,12 @@ const router = express.Router();
 
 router.post('/signup', upload.single('photo'), async (req, res) => {
 	// res.send("You made a post request on heroku!")
-	console.log('req.file: ', req.file);
+	if (req.file) {
+		console.log('req.file: ', req.file);
+		const new_img = new Img({ img: { data: fs.readFileSync(req.file.path), contentType: 'image/jpeg' } });
+		var saved_img = await new_img.save();
+		// console.log('saved img: ', saved_img);
+	}
 	// let bitmap = fs.readFileSync(req.file.path);
 	// let b64 = new Buffer(bitmap).toString('base64');
 	// console.log('received data: ' + b64);
@@ -25,11 +30,11 @@ router.post('/signup', upload.single('photo'), async (req, res) => {
 	// 		console.log(err);
 	// 	}
 	// });
-	const { username, password, avatar } = req.body;
+	const { username, password } = req.body;
 	// const user = new User({ username, password });
 	// await user.save();
 	try {
-		const user = new User({ username, password, avatar });
+		const user = new User({ username, password, avatar: saved_img._id });
 		await user.save();
 		console.log('User Created!: ', username);
 

@@ -6,12 +6,22 @@ const PrivateChannel = mongoose.model('PrivateChannel');
 const PM = mongoose.model('PM');
 const fs = require('fs');
 const path = require('path');
-const filePath = path.join(process.cwd(), '/uploads/824128849df5344f3615904d6a4fabef');
+// const filePath = path.join(process.cwd(), '/uploads/824128849df5344f3615904d6a4fabef');
 const User = mongoose.model('User');
+const Img = mongoose.model('Img');
 
 const router = express.Router();
 
 router.use(requireAuth);
+
+router.get('/images', async (req, res) => {
+	const { avatarId } = req.query;
+	console.log('aId', avatarId);
+	const foundImgs = await Img.find({ _id: avatarId });
+	const buffer = foundImgs[0].img.data;
+	console.log(buffer);
+	res.send(buffer);
+});
 
 router.get('/channels', async (req, res) => {
 	console.log('req.user is: ', req.user);
@@ -19,16 +29,16 @@ router.get('/channels', async (req, res) => {
 		return res.send({ error: 'user could not be found' });
 	}
 	const currentUser = req.user;
-	let userAvatar;
-	fs.readFile(filePath, { encoding: null }, function(err, data) {
-		if (!err) {
-			userAvatar = data;
-			console.log(data);
-		} else {
-			console.log(err);
-		}
-	});
-	console.log('userAvatar', userAvatar);
+	// let userAvatar;
+	// fs.readFile(filePath, { encoding: null }, function(err, data) {
+	// 	if (!err) {
+	// 		userAvatar = data;
+	// 		console.log(data);
+	// 	} else {
+	// 		console.log(err);
+	// 	}
+	// });
+	// console.log('userAvatar', userAvatar);
 	const channels = await Channel.find({});
 	const privateChannels = await PrivateChannel.find({
 		members: currentUser.username,
