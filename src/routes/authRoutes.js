@@ -30,11 +30,11 @@ router.post('/signup', upload.single('photo'), async (req, res) => {
 	// 		console.log(err);
 	// 	}
 	// });
-	const { username, password } = req.body;
+	const { username, password, avatar } = req.body;
 	// const user = new User({ username, password });
 	// await user.save();
 	try {
-		const user = new User({ username, password, avatar: saved_img._id });
+		const user = new User({ username, password, avatar: avatar });
 		await user.save();
 		console.log('User Created!: ', username);
 
