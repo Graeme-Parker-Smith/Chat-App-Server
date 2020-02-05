@@ -12,6 +12,7 @@ localSCRT = require('../../keys').localSCRT;
 const SCRT = process.env.JWT_SECRET || localSCRT;
 const axios = require('axios');
 const fetch = require('node-fetch');
+var cloudinary = require('cloudinary').v2;
 
 const router = express.Router();
 
