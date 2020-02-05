@@ -10,8 +10,40 @@ const Img = mongoose.model('Img');
 let localSCRT;
 localSCRT = require('../../keys').localSCRT;
 const SCRT = process.env.JWT_SECRET || localSCRT;
+const axios = require('axios');
+const fetch = require('node-fetch');
 
 const router = express.Router();
+
+router.post('/video', upload.single('videoFile'), async (req, res) => {
+	try {
+		console.log('req.file: ', req.file);
+
+		let apiUrl = `https://api.cloudinary.com/v1_1/jaded/video/upload`;
+
+		console.log('apiUrl', apiUrl);
+		let fileData = fs.readFileSync(req.file.path, { encoding: 'base64' });
+		console.log('fileData', fileData.slice(0, 100));
+		let b = {
+			file: fileData,
+			upload_preset: 'auymih3b',
+		};
+
+		let r = await fetch(apiUrl, {
+			body: JSON.stringify(b),
+			headers: {
+				'content-type': 'application/json',
+			},
+			method: 'POST',
+		});
+		console.log('r', r);
+		let data = await r.json();
+		console.log('cloud_url', data);
+		res.send(data.secure_url);
+	} catch (err) {
+		console.log(err);
+	}
+});
 
 router.post('/signup', upload.single('photo'), async (req, res) => {
 	// res.send("You made a post request on heroku!")

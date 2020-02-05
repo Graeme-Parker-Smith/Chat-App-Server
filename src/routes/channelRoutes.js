@@ -24,8 +24,8 @@ router.get('/images', async (req, res) => {
 });
 
 router.get('/channels', async (req, res) => {
-	console.log('req.user is: ', req.user);
-	if (!req.user) {
+  if (!req.user) {
+    console.log('req.user is: ', req.user);
 		return res.send({ error: 'user could not be found' });
 	}
 	const currentUser = req.user;
