@@ -12,38 +12,38 @@ localSCRT = require('../../keys').localSCRT;
 const SCRT = process.env.JWT_SECRET || localSCRT;
 const axios = require('axios');
 const fetch = require('node-fetch');
-var cloudinary = require('cloudinary').v2;
-cloudinary.config({
-	cloud_name: 'jaded',
-});
+const cloudinary = require('../../cloudinary');
 
 const router = express.Router();
 
 router.post('/video', upload.single('videoFile'), async (req, res) => {
 	try {
 		console.log('req.file: ', req.file);
-		return;
-		let apiUrl = `https://api.cloudinary.com/v1_1/jaded/video/upload`;
-
-		console.log('apiUrl', apiUrl);
-		let fileData = fs.readFileSync(req.file.path, { encoding: 'base64' });
-		console.log('fileData', fileData.slice(0, 100));
-		let b = {
-			file: fileData,
-			upload_preset: 'auymih3b',
-		};
-
-		let r = await fetch(apiUrl, {
-			body: JSON.stringify(b),
-			headers: {
-				'content-type': 'application/json',
-			},
-			method: 'POST',
+		cloudinary.uploader.upload(req.file.path, { resource_type: 'video' }, function(error, result) {
+			console.log(result, error);
+			return res.send({ secure_url: result.secure_url });
 		});
-		console.log('r', r);
-		let data = await r.json();
-		console.log('cloud_url', data);
-		res.send(data.secure_url);
+		// let apiUrl = `https://api.cloudinary.com/v1_1/jaded/video/upload`;
+
+		// console.log('apiUrl', apiUrl);
+		// let fileData = fs.readFileSync(req.file.path, { encoding: 'base64' });
+		// console.log('fileData', fileData.slice(0, 100));
+		// let b = {
+		// 	file: fileData,
+		// 	upload_preset: 'auymih3b',
+		// };
+
+		// let r = await fetch(apiUrl, {
+		// 	body: JSON.stringify(b),
+		// 	headers: {
+		// 		'content-type': 'application/json',
+		// 	},
+		// 	method: 'POST',
+		// });
+		// console.log('r', r);
+		// let data = await r.json();
+		// console.log('cloud_url', data);
+		// res.send(data.secure_url);
 	} catch (err) {
 		console.log(err);
 	}
