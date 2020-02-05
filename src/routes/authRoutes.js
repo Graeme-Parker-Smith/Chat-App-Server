@@ -22,7 +22,7 @@ const router = express.Router();
 router.post('/video', upload.single('videoFile'), async (req, res) => {
 	try {
 		console.log('req.file: ', req.file);
-
+		return;
 		let apiUrl = `https://api.cloudinary.com/v1_1/jaded/video/upload`;
 
 		console.log('apiUrl', apiUrl);
