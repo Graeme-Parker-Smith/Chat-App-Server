@@ -114,9 +114,13 @@ io.on('connection', socket => {
 		const username = req.user.username;
 		let messages;
 		if (req.query.stateLength) {
-			messages = thisChannel.messages.slice(
-				Math.max(thisChannel.messages.length - req.query.stateLength - 10, 1)
-			);
+			if (thisChannel.messages.length - req.query.stateLength < 10) {
+				messages = thisChannel.messages;
+			} else {
+				messages = thisChannel.messages.slice(
+					Math.max(thisChannel.messages.length - req.query.stateLength - 10, 1)
+				);
+			}
 		} else if (thisChannel.messages.length < 20) {
 			messages = thisChannel.messages;
 		} else {
