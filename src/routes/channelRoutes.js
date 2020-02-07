@@ -24,8 +24,8 @@ router.get('/images', async (req, res) => {
 });
 
 router.get('/channels', async (req, res) => {
-  if (!req.user) {
-    console.log('req.user is: ', req.user);
+	if (!req.user) {
+		console.log('req.user is: ', req.user);
 		return res.send({ error: 'user could not be found' });
 	}
 	const currentUser = req.user;
@@ -125,12 +125,14 @@ router.post('/updatechannel', async (req, res) => {
 });
 
 router.post('/addfriend', async (req, res) => {
-	const { username, friendName } = req.body;
-	console.log('friendName', friendName);
 	try {
+		const { username, friendName } = req.body;
+		if (!username || !friendName) throw 'Could not add friend';
+		console.log('friendName', friendName);
 		const currentUser = await User.findOne({ username });
 		console.log('currentUser.username', currentUser.username);
 		const friendToAdd = await User.findOne({ username: friendName });
+		if (!friendToAdd) throw 'could not find user with that name';
 		console.log('friendToAdd', friendToAdd);
 		const updatedUser = await User.updateOne(
 			{ _id: currentUser._id },
