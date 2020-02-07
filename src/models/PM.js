@@ -14,12 +14,6 @@ const messageSchema = new mongoose.Schema({
 });
 
 const pmSchema = new mongoose.Schema({
-  name: {
-    type: String,
-  },
-  creator: {
-    type: String,
-  },
   members: [String],
   messages: [messageSchema],
 });
