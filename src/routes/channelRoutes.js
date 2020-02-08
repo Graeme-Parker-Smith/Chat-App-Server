@@ -106,17 +106,29 @@ router.post('/privatechannels', async (req, res) => {
 });
 
 router.post('/updatechannel', async (req, res) => {
-	const { username, prevName, newName, newAvatar } = req.body;
+	const { username, prevName, newName, newAvatar, private } = req.body;
 	try {
-		const foundChannel = await Channel.findOne({ name: prevName });
-		const updatedChannel = await Channel.findOneAndUpdate(
-			{ name: prevName },
-			{
-				name: newName || foundChannel.name,
-				avatar: newAvatar || foundChannel.avatar,
-			},
-			{ returnNewDocument: true }
-		);
+		if (!private) {
+			const foundChannel = await Channel.findOne({ name: prevName });
+			const updatedChannel = await Channel.findOneAndUpdate(
+				{ name: prevName },
+				{
+					name: newName || foundChannel.name,
+					avatar: newAvatar || foundChannel.avatar,
+				},
+				{ returnNewDocument: true }
+			);
+		} else if (private) {
+			const foundChannel = await PrivateChannel.findOne({ name: prevName });
+			const updatedChannel = await PrivateChannel.findOneAndUpdate(
+				{ name: prevName },
+				{
+					name: newName || foundChannel.name,
+					avatar: newAvatar || foundChannel.avatar,
+				},
+				{ returnNewDocument: true }
+			);
+		}
 		res.send({ updatedChannel });
 	} catch (err) {
 		console.error(err);
