@@ -98,7 +98,7 @@ router.post('/updatechannel', async (req, res) => {
 	try {
 		if (!private) {
 			const foundChannel = await Channel.findOne({ name: prevName });
-			const updatedChannel = await Channel.findOneAndUpdate(
+			var updatedChannel = await Channel.findOneAndUpdate(
 				{ name: prevName },
 				{
 					name: newName || foundChannel.name,
@@ -108,7 +108,7 @@ router.post('/updatechannel', async (req, res) => {
 			);
 		} else if (private) {
 			const foundChannel = await PrivateChannel.findOne({ name: prevName });
-			const updatedChannel = await PrivateChannel.findOneAndUpdate(
+			var updatedChannel = await PrivateChannel.findOneAndUpdate(
 				{ name: prevName },
 				{
 					name: newName || foundChannel.name,
