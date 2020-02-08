@@ -29,16 +29,6 @@ router.get('/channels', async (req, res) => {
 		return res.send({ error: 'user could not be found' });
 	}
 	const currentUser = req.user;
-	// let userAvatar;
-	// fs.readFile(filePath, { encoding: null }, function(err, data) {
-	// 	if (!err) {
-	// 		userAvatar = data;
-	// 		console.log(data);
-	// 	} else {
-	// 		console.log(err);
-	// 	}
-	// });
-	// console.log('userAvatar', userAvatar);
 	const channels = await Channel.find({});
 	const privateChannels = await PrivateChannel.find({
 		members: currentUser.username,
@@ -46,9 +36,7 @@ router.get('/channels', async (req, res) => {
 	const PMs = await PM.find({
 		members: currentUser.username,
 	});
-
 	console.log('username is: ', currentUser.username);
-
 	res.send({ channels, privateChannels, PMs, currentUser });
 });
 
