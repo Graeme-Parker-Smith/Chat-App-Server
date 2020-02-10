@@ -126,7 +126,7 @@ router.post('/updatechannel', async (req, res) => {
 
 router.post('/addfriend', async (req, res) => {
 	try {
-		const { username, friendName } = req.body;
+		const { username, friendName, shouldRemove } = req.body;
 		if (!username || !friendName) throw 'Could not add friend';
 		console.log('friendName', friendName);
 		const currentUser = await User.findOne({ username });
@@ -134,20 +134,28 @@ router.post('/addfriend', async (req, res) => {
 		const friendToAdd = await User.findOne({ username: friendName });
 		if (!friendToAdd) throw 'could not find user with that name';
 		console.log('friendToAdd', friendToAdd);
-		const updatedUser = await User.updateOne(
-			{ _id: currentUser._id },
-			{ $push: { friends: friendToAdd } },
-			{ returnNewDocument: true }
-		);
-		console.log(`${friendToAdd.username} added as a friend! CurrentUser data is now: ${updatedUser}`);
-		const newPM = new PM({
-			messages: [],
-			members: [username, friendName],
-		});
-		await newPM.save();
-		const PMs = await PM.find({});
-		console.log('PMs is: ', PMs);
-		res.send({ currentUser: updatedUser, PMs });
+		let updatedUser;
+		if (!shouldRemove) {
+			updatedUser = await User.updateOne(
+				{ _id: currentUser._id },
+				{ $push: { friends: friendToAdd } },
+				{ returnNewDocument: true }
+			);
+			console.log(`${friendToAdd.username} added as a friend! CurrentUser data is now: ${updatedUser}`);
+			const newPM = new PM({
+				messages: [],
+				members: [username, friendName],
+			});
+			await newPM.save();
+		} else if (shouldRemove) {
+			updatedUser = await User.updateOne(
+				{ _id: currentUser._id },
+				{ $pull: { friends: friendToAdd } },
+				{ returnNewDocument: true }
+			);
+			console.log(`${friendToAdd.username} removed from friend's list! CurrentUser data is now: ${updatedUser}`);
+		}
+		res.send({ currentUser: updatedUser });
 	} catch (err) {
 		console.log(err);
 		return res.status(422).send({ error: 'could not find user with that name' });
