@@ -126,7 +126,7 @@ router.post('/updatechannel', async (req, res) => {
 
 router.post('/addfriend', async (req, res) => {
 	try {
-		const { username, friendName, shouldRemove } = req.body;
+		const { username, friendName, shouldRemove, shouldBlock } = req.body;
 		if (!username || !friendName) throw 'Could not add friend';
 		console.log('friendName', friendName);
 		const currentUser = await User.findOne({ username });
@@ -147,15 +147,17 @@ router.post('/addfriend', async (req, res) => {
 				members: [username, friendName],
 			});
 			await newPM.save();
+		} else if (shouldBlock) {
+			updatedUser = await User.updateOne(
+				{ _id: currentUser._id },
+				{ $pull: { friends: { _id: friendToAdd._id } }, $push: { blocked: friendToAdd } },
+				{ returnNewDocument: true }
+			);
 		} else if (shouldRemove) {
 			updatedUser = await User.updateOne(
 				{ _id: currentUser._id },
-				{ $pull: { friends: friendToAdd } },
+				{ $pull: { friends: { _id: friendToAdd._id } } },
 				{ returnNewDocument: true }
-			);
-			console.log(
-				`${friendToAdd.username} removed from friend's list! CurrentUser data is now:`,
-				updatedUser.friends
 			);
 		}
 		updatedUser = await User.findOne({ username });

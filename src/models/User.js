@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema({
   friends: {
     type: Array
   },
+  blocked: {
+    type: Array
+  },
   tokens: {
     type: Array
   }
