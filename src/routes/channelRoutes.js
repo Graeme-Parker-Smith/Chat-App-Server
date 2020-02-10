@@ -153,8 +153,13 @@ router.post('/addfriend', async (req, res) => {
 				{ $pull: { friends: friendToAdd } },
 				{ returnNewDocument: true }
 			);
-			console.log(`${friendToAdd.username} removed from friend's list! CurrentUser data is now: ${updatedUser}`);
+			console.log(
+				`${friendToAdd.username} removed from friend's list! CurrentUser data is now:`,
+				updatedUser.friends
+			);
 		}
+		updatedUser = await User.findOne({ username });
+
 		res.send({ currentUser: updatedUser });
 	} catch (err) {
 		console.log(err);
