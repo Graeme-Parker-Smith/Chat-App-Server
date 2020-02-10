@@ -131,7 +131,7 @@ router.post('/addfriend', async (req, res) => {
 		console.log('friendName', friendName);
 		const currentUser = await User.findOne({ username });
 		console.log('currentUser.username', currentUser.username);
-		const friendToAdd = await User.findOne({ username: friendName });
+		const friendToAdd = await User.findOne({ username: friendName, friends: { _id: { $nin: currentUser._id } } });
 		if (!friendToAdd) throw 'could not find user with that name';
 		console.log('friendToAdd', friendToAdd);
 		if (!shouldRemove) {
