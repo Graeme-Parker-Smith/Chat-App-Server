@@ -136,7 +136,8 @@ io.on('connection', socket => {
 		console.log('server receives pm');
 		try {
 			const { sender, messageBody, receiver } = req.body;
-			const foundUser = await User.findOne({ username: receiver });
+			const sendingUser = await User.findOne({ username: sender });
+			const foundUser = await User.findOne({ username: receiver, blocked: { _id: { $nin: sendingUser._id } } });
 			const tokens = foundUser.tokens;
 			tokens.forEach(token => {
 				axios.post('https://exp.host/--/api/v2/push/send', {
