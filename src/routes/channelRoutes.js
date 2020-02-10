@@ -134,33 +134,36 @@ router.post('/addfriend', async (req, res) => {
 		const friendToAdd = await User.findOne({ username: friendName });
 		if (!friendToAdd) throw 'could not find user with that name';
 		console.log('friendToAdd', friendToAdd);
-		let updatedUser;
 		if (!shouldRemove) {
-			updatedUser = await User.updateOne(
+			await User.updateOne(
 				{ _id: currentUser._id },
-				{ $push: { friends: friendToAdd } },
+				{ $addToSet: { friends: friendToAdd } },
 				{ returnNewDocument: true }
 			);
-			console.log(`${friendToAdd.username} added as a friend! CurrentUser data is now: ${updatedUser}`);
-			const newPM = new PM({
-				messages: [],
-				members: [username, friendName],
-			});
-			await newPM.save();
+			console.log(`${friendToAdd.username} added as a friend!`);
+			const foundPM = await PM.findOne({ members: { $all: [username, friendName] } });
+			console.log('foundPM', foundPM);
+			if (!foundPM) {
+				const newPM = new PM({
+					messages: [],
+					members: [username, friendName],
+				});
+				await newPM.save();
+			}
 		} else if (shouldBlock) {
-			updatedUser = await User.updateOne(
+			await User.updateOne(
 				{ _id: currentUser._id },
-				{ $pull: { friends: { _id: friendToAdd._id } }, $push: { blocked: friendToAdd } },
+				{ $pull: { friends: { _id: friendToAdd._id } }, $addToSet: { blocked: friendToAdd } },
 				{ returnNewDocument: true }
 			);
 		} else if (shouldRemove) {
-			updatedUser = await User.updateOne(
+			await User.updateOne(
 				{ _id: currentUser._id },
 				{ $pull: { friends: { _id: friendToAdd._id } } },
 				{ returnNewDocument: true }
 			);
 		}
-		updatedUser = await User.findOne({ username });
+		const updatedUser = await User.findOne({ username });
 
 		res.send({ currentUser: updatedUser });
 	} catch (err) {
