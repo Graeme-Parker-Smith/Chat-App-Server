@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const axios = require('axios');
 const requireAuth = require('../middlewares/requireAuth');
 const Channel = mongoose.model('Channel');
 const PrivateChannel = mongoose.model('PrivateChannel');
@@ -131,7 +132,9 @@ router.post('/addfriend', async (req, res) => {
 		console.log('friendName', friendName);
 		const currentUser = await User.findOne({ username });
 		console.log('currentUser.username', currentUser.username);
-		const friendToAdd = await User.findOne({ username: friendName, friends: { _id: { $nin: currentUser._id } } });
+		const findUserNotBlocked = await User.findOne({ 'blocked._id': { $nin: [currentUser._id] } });
+		console.log('user without block: ', findUserNotBlocked);
+		const friendToAdd = await User.findOne({ username: friendName, 'blocked._id': { $nin: [currentUser._id] } });
 		if (!friendToAdd) throw 'could not find user with that name';
 		console.log('friendToAdd', friendToAdd);
 		if (!shouldRemove) {
@@ -150,6 +153,15 @@ router.post('/addfriend', async (req, res) => {
 				});
 				await newPM.save();
 			}
+			const tokens = friendToAdd.tokens;
+			tokens.forEach(token => {
+				axios.post('https://exp.host/--/api/v2/push/send', {
+					to: token,
+					sound: 'default',
+					title: 'Friend Request',
+					body: `${currentUser.username} added you as a friend!`,
+				});
+			});
 		} else if (shouldBlock) {
 			await User.updateOne(
 				{ _id: currentUser._id },
