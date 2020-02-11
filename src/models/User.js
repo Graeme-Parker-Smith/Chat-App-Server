@@ -11,18 +11,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  avatar: {
-    type: String
-  },
-  friends: {
-    type: Array
-  },
-  blocked: {
-    type: Array
-  },
-  tokens: {
-    type: Array
-  }
+  avatar: String,
+  friends: Array,
+  requestsReceived: Array,
+  pending: Array,
+  blocked: Array,
+  tokens: Array,
 });
 
 // Functions below modify User model and are called whenever a new User is created
