@@ -57,15 +57,6 @@ router.post('/signup', upload.single('photo'), async (req, res) => {
 		var saved_img = await new_img.save();
 		// console.log('saved img: ', saved_img);
 	}
-	// let bitmap = fs.readFileSync(req.file.path);
-	// let b64 = new Buffer(bitmap).toString('base64');
-	// console.log('received data: ' + b64);
-	// fs.readFile(req.file.path, { encoding: null }, function(err, data) {
-	// 	if (!err) {
-	// 	} else {
-	// 		console.log(err);
-	// 	}
-	// });
 	const { username, password, avatar } = req.body;
 	// const user = new User({ username, password });
 	// await user.save();
