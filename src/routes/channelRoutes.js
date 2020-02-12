@@ -7,7 +7,6 @@ const PrivateChannel = mongoose.model('PrivateChannel');
 const PM = mongoose.model('PM');
 const fs = require('fs');
 const path = require('path');
-// const filePath = path.join(process.cwd(), '/uploads/824128849df5344f3615904d6a4fabef');
 const User = mongoose.model('User');
 const Img = mongoose.model('Img');
 
@@ -49,7 +48,6 @@ router.post('/channels', async (req, res) => {
 	console.log('channel name is: ', name);
 	console.log('creator name is: ', creator);
 	console.log('channel avatar is: ', avatar);
-	// creator: req.user._id, members: [req.user._id]
 	try {
 		const channel = new Channel({
 			name,
@@ -75,7 +73,6 @@ router.post('/privatechannels', async (req, res) => {
 	console.log('channel name is: ', name);
 	console.log('creator name is: ', creator);
 	console.log('channel avatar is: ', avatar);
-	// creator: req.user._id, members: [req.user._id]
 	try {
 		const channel = new PrivateChannel({
 			name,
