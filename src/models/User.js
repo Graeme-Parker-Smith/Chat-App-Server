@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema({
   pending: Array,
   blocked: Array,
   tokens: Array,
+  createdAt: Date,
+  mentions: Array,
+  score: Number
 });
 
 // Functions below modify User model and are called whenever a new User is created
