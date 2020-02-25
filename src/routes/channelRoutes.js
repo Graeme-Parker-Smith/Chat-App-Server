@@ -133,16 +133,11 @@ router.post('/addfriend', async (req, res) => {
 		if (!friendToAdd) throw 'could not find user with that name';
 		console.log('friendToAdd', friendToAdd);
 		if (!shouldRemove) {
-			await User.updateOne(
-				{ _id: currentUser._id },
-				{
-					$addToSet: { friends: friendToAdd },
-					$pull: { blocked: { _id: friendToAdd._id }, requestsReceived: { id: friendToAdd._id } },
-				},
-				{ returnNewDocument: true }
-			);
-			// if added friend does not have current user as friend
-			if (!friendToAdd.friends.some(f => f._id === currentUser._id)) {
+			// if added friend does not have current user added
+			let imAddingFirst = !friendToAdd.pending.some(f => f._id === currentUser._id);
+			console.log('imAddingFirst: ', imAddingFirst);
+			if (imAddingFirst) {
+				// update user
 				await User.updateOne(
 					{ _id: currentUser._id },
 					{
@@ -153,8 +148,10 @@ router.post('/addfriend', async (req, res) => {
 								avatar: friendToAdd.avatar,
 							},
 						},
+						$pull: { blocked: { _id: friendToAdd._id } },
 					}
 				);
+				// update friend
 				await User.updateOne(
 					{ _id: friendToAdd._id },
 					{
@@ -167,10 +164,39 @@ router.post('/addfriend', async (req, res) => {
 						},
 					}
 				);
+			} else {
+				// if friend being added has already sent request to user
+				// update user
+				await User.updateOne(
+					{ _id: currentUser._id },
+					{
+						$addToSet: {
+							friends: {
+								username: friendToAdd.username,
+								_id: friendToAdd._id,
+								avatar: friendToAdd.avatar,
+							},
+						},
+						$pull: { blocked: { _id: friendToAdd._id }, requestsReceived: { id: friendToAdd._id } },
+					}
+				);
+				// update friend
+				await User.updateOne(
+					{ _id: friendToAdd._id },
+					{
+						$addToSet: {
+							friends: {
+								username: currentUser.username,
+								_id: currentUser._id,
+								avatar: currentUser.avatar,
+							},
+						},
+						$pull: { pending: { _id: currentUser._id } },
+					}
+				);
 			}
 			console.log(`${friendToAdd.username} added as a friend!`);
 			const foundPM = await PM.findOne({ members: { $all: [username, friendName] } });
-			console.log('foundPM', foundPM);
 			if (!foundPM) {
 				const newPM = new PM({
 					messages: [],
@@ -179,25 +205,30 @@ router.post('/addfriend', async (req, res) => {
 				await newPM.save();
 			}
 			const tokens = friendToAdd.tokens;
+			if (imAddingFirst) {
+			}
 			tokens.forEach(token => {
 				axios.post('https://exp.host/--/api/v2/push/send', {
 					to: token,
 					sound: 'default',
-					title: 'Friend Request',
-					body: `${currentUser.username} added you as a friend!`,
+					title: imAddingFirst ? 'Friend Request' : 'New Friend!',
+					body: imAddingFirst
+						? `${currentUser.username} sent you a friend request!`
+						: `${currentUser.username} added you as a friend!`,
 				});
 			});
 		} else if (shouldBlock) {
 			await User.updateOne(
 				{ _id: currentUser._id },
-				{ $pull: { friends: { _id: friendToAdd._id } }, $addToSet: { blocked: friendToAdd } }
+				{ $pull: { friends: { _id: friendToAdd._id }, pending: { _id: friendToAdd._id }, requestsReceived: { _id: friendToAdd._id } }, $addToSet: { blocked: friendToAdd } }
 			);
 			await User.updateOne(
 				{ _id: friendToAdd._id },
-				{ $pull: { pending: { _id: currentUser._id }, requestsReceived: { _id: currentUser._id } } }
+				{ $pull: { friends: { _id: currentUser._id }, pending: { _id: currentUser._id }, requestsReceived: { _id: currentUser._id } } }
 			);
 		} else if (shouldRemove) {
-			await User.updateOne({ _id: currentUser._id }, { $pull: { friends: { _id: friendToAdd._id } } });
+			await User.updateOne({ _id: currentUser._id }, { $pull: { friends: { _id: friendToAdd._id }, pending: { _id: friendToAdd._id } } });
+			await User.updateOne({ _id: friendToAdd._id }, { $pull: { friends: { _id: currentUser._id }, requestsReceived: { _id: currentUser._id } } });
 		}
 		const updatedUser = await User.findOne({ username });
 
