@@ -96,6 +96,14 @@ io.on('connection', socket => {
 		socket.leave(room);
 	});
 
+	socket.on('usersearch', async ({ currentUser, searchKey }) => {
+		const searchResults = await User.find({ username: { $regex: searchKey } });
+		console.log(searchResults);
+		const results = searchResults.filter(r => !r.blocked.includes(currentUser));
+		console.log(results);
+		socket.emit('usersearch', { results });
+	});
+
 	router.get('/messages', async (req, res) => {
 		const { roomName, roomType, room_id } = req.query;
 		const filter = { _id: room_id };
