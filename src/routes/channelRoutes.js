@@ -137,11 +137,11 @@ router.post('/addfriend', async (req, res) => {
 				{ _id: currentUser._id },
 				{
 					$addToSet: { friends: friendToAdd },
-					$pull: { blocked: { _id: friendToAdd._id } },
-					$pull: { requestsReceived: { id: friendToAdd._id } },
+					$pull: { blocked: { _id: friendToAdd._id }, requestsReceived: { id: friendToAdd._id } },
 				},
 				{ returnNewDocument: true }
 			);
+			// if added friend does not have current user as friend
 			if (!friendToAdd.friends.some(f => f._id === currentUser._id)) {
 				await User.updateOne(
 					{ _id: currentUser._id },
@@ -149,26 +149,26 @@ router.post('/addfriend', async (req, res) => {
 						$addToSet: {
 							pending: {
 								username: friendToAdd.username,
-								id: friendToAdd._id,
+								_id: friendToAdd._id,
 								avatar: friendToAdd.avatar,
+							},
+						},
+					}
+				);
+				await User.updateOne(
+					{ _id: friendToAdd._id },
+					{
+						$addToSet: {
+							requestsReceived: {
+								username: currentUser.username,
+								_id: currentUser._id,
+								avatar: currentUser.avatar,
 							},
 						},
 					}
 				);
 			}
 			console.log(`${friendToAdd.username} added as a friend!`);
-			await User.updateOne(
-				{ _id: friendToAdd._id },
-				{
-					$addToSet: {
-						requestsReceived: {
-							username: currentUser.username,
-							id: currentUser._id,
-							avatar: currentUser.avatar,
-						},
-					},
-				}
-			);
 			const foundPM = await PM.findOne({ members: { $all: [username, friendName] } });
 			console.log('foundPM', foundPM);
 			if (!foundPM) {
@@ -190,15 +190,14 @@ router.post('/addfriend', async (req, res) => {
 		} else if (shouldBlock) {
 			await User.updateOne(
 				{ _id: currentUser._id },
-				{ $pull: { friends: { _id: friendToAdd._id } }, $addToSet: { blocked: friendToAdd } },
-				{ returnNewDocument: true }
+				{ $pull: { friends: { _id: friendToAdd._id } }, $addToSet: { blocked: friendToAdd } }
+			);
+			await User.updateOne(
+				{ _id: friendToAdd._id },
+				{ $pull: { pending: { _id: currentUser._id }, requestsReceived: { _id: currentUser._id } } }
 			);
 		} else if (shouldRemove) {
-			await User.updateOne(
-				{ _id: currentUser._id },
-				{ $pull: { friends: { _id: friendToAdd._id } } },
-				{ returnNewDocument: true }
-			);
+			await User.updateOne({ _id: currentUser._id }, { $pull: { friends: { _id: friendToAdd._id } } });
 		}
 		const updatedUser = await User.findOne({ username });
 
