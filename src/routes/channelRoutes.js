@@ -137,9 +137,6 @@ router.post('/addfriend', async (req, res) => {
 				{ _id: currentUser._id },
 				{
 					$addToSet: { friends: friendToAdd },
-					$addToSet: {
-						pending: { username: friendToAdd.username, id: friendToAdd._id, avatar: friendToAdd.avatar },
-					},
 					$pull: { blocked: { _id: friendToAdd._id } },
 					$pull: { requestsReceived: { id: friendToAdd._id } },
 				},
