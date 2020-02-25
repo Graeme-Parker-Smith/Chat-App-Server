@@ -49,19 +49,19 @@ router.post('/video', upload.single('videoFile'), async (req, res) => {
 	}
 });
 
-router.post('/signup', upload.single('photo'), async (req, res) => {
+router.post('/signup', async (req, res) => {
 	// res.send("You made a post request on heroku!")
-	if (req.file) {
-		console.log('req.file: ', req.file);
-		const new_img = new Img({ img: { data: fs.readFileSync(req.file.path), contentType: 'image/jpeg' } });
-		var saved_img = await new_img.save();
-		// console.log('saved img: ', saved_img);
-	}
+	// if (req.file) {
+	// 	console.log('req.file: ', req.file);
+	// 	const new_img = new Img({ img: { data: fs.readFileSync(req.file.path), contentType: 'image/jpeg' } });
+	// 	var saved_img = await new_img.save();
+	// 	// console.log('saved img: ', saved_img);
+	// }
 	const { username, password, avatar } = req.body;
 	// const user = new User({ username, password });
 	// await user.save();
 	try {
-		const user = new User({ username, password, avatar: avatar });
+		const user = new User({ username, password, avatar: avatar, createdAt: new Date().toLocaleDateString() });
 		await user.save();
 		console.log('User Created!: ', username);
 

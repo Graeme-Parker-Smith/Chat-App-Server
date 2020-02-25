@@ -78,6 +78,7 @@ io.on('connection', socket => {
 				});
 				await thisChannel.save();
 				console.log('message saved!');
+				await User.findOneAndUpdate({ username: creator }, { $inc: { msgsSent: 1 } });
 			} catch (err) {
 				console.log(err);
 			}

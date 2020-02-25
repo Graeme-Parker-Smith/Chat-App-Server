@@ -17,10 +17,13 @@ const userSchema = new mongoose.Schema({
 	pending: Array,
 	blocked: Array,
 	tokens: Array,
-	createdAt: Date,
 	mentions: Array,
-	msgsSent: Number,
+	msgsSent: {
+		type: Number,
+		default: 0
+	},
 	notificationsEnabled: Boolean,
+	createdAt: String,
 });
 
 // Functions below modify User model and are called whenever a new User is created
