@@ -137,13 +137,41 @@ router.post('/addfriend', async (req, res) => {
 				{ _id: currentUser._id },
 				{
 					$addToSet: { friends: friendToAdd },
-					$addToSet: { pending: friendToAdd._id },
+					$addToSet: {
+						pending: { username: friendToAdd.username, id: friendToAdd._id, avatar: friendToAdd.avatar },
+					},
 					$pull: { blocked: { _id: friendToAdd._id } },
+					$pull: { requestsReceived: { id: friendToAdd._id } },
 				},
 				{ returnNewDocument: true }
 			);
+			if (!friendToAdd.friends.some(f => f._id === currentUser._id)) {
+				await User.updateOne(
+					{ _id: currentUser._id },
+					{
+						$addToSet: {
+							pending: {
+								username: friendToAdd.username,
+								id: friendToAdd._id,
+								avatar: friendToAdd.avatar,
+							},
+						},
+					}
+				);
+			}
 			console.log(`${friendToAdd.username} added as a friend!`);
-			await User.updateOne({ _id: friendToAdd._id }, { $addToSet: { requestsReceived: currentUser._id } });
+			await User.updateOne(
+				{ _id: friendToAdd._id },
+				{
+					$addToSet: {
+						requestsReceived: {
+							username: currentUser.username,
+							id: currentUser._id,
+							avatar: currentUser.avatar,
+						},
+					},
+				}
+			);
 			const foundPM = await PM.findOne({ members: { $all: [username, friendName] } });
 			console.log('foundPM', foundPM);
 			if (!foundPM) {

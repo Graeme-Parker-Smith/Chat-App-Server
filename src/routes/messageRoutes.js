@@ -97,6 +97,7 @@ io.on('connection', socket => {
 	});
 
 	socket.on('usersearch', async ({ currentUser, searchKey }) => {
+		console.log('received usersearch!');
 		const searchResults = await User.find({ username: { $regex: searchKey } });
 		console.log(searchResults);
 		const results = searchResults.filter(r => !r.blocked.includes(currentUser));
