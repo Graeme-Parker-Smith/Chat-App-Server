@@ -120,7 +120,6 @@ router.post('/pushtoken', async (req, res) => {
 
 router.post('/updateuser', async (req, res) => {
 	const { username, newUsername, newPassword, newAvatar } = req.body;
-	console.log('newPassword is: ', newPassword);
 	if (!newPassword) {
 		console.log('newpassword is falsy');
 	}
@@ -132,14 +131,9 @@ router.post('/updateuser', async (req, res) => {
 				{ username },
 				{
 					username: newUsername || foundUser.username,
-				},
-				{ returnNewDocument: true }
-			);
-			await User.update(
-				{ username },
-				{
 					avatar: newAvatar || foundUser.avatar,
-				}
+				},
+				{ new: true }
 			);
 		} else {
 			updatedUser = await User.findOneAndUpdate(
@@ -149,24 +143,43 @@ router.post('/updateuser', async (req, res) => {
 					password: newPassword,
 					avatar: newAvatar || foundUser.avatar,
 				},
-				{ returnNewDocument: true }
+				{ new: true }
 			);
 		}
-		// await foundUser.save();
-
+		// update user data om friends, pending, requestsReceived, and blocked fields of all other users
+		const updatedUserPartial = {
+			_id: updatedUser._id,
+			username: updatedUser.username,
+			avatar: updatedUser.avatar,
+		};
+		await User.updateMany(
+			{
+				$or: [
+					{ 'friends._id': foundUser._id },
+					{ 'pending._id': foundUser._id },
+					{ 'requestsReceived._id': foundUser._id },
+					{ 'blocked._id': foundUser._id },
+				],
+			},
+			{
+				$set: {
+					'friends.$[t]': updatedUserPartial,
+					'pending.$[t]': updatedUserPartial,
+					'requestsReceived.$[t]': updatedUserPartial,
+					'blocked.$[t]': updatedUserPartial,
+				},
+			},
+			{ arrayFilters: [{ 't._id': foundUser._id }] }
+		);
 		let channels = await Channel.find({});
 		await channels.forEach(async function(doc) {
-			console.log('CHANNEL NAME', doc.name);
 			let newMessages = doc.messages.map(message => {
 				if (message.creator === foundUser.username) {
-					console.log('old message', message);
 					message.creator = newUsername;
 					message.avatar = newAvatar;
-					console.log('new message', message);
 				}
 				return message;
 			});
-			console.log('DOC.name', doc.name);
 
 			await Channel.update({ name: doc.name }, { $set: { messages: newMessages } });
 		});
