@@ -231,7 +231,13 @@ router.post('/addfriend', async (req, res) => {
 						pending: { _id: friendToAdd._id },
 						requestsReceived: { _id: friendToAdd._id },
 					},
-					$addToSet: { blocked: friendToAdd },
+					$addToSet: {
+						blocked: {
+							username: friendToAdd.username,
+							_id: friendToAdd._id,
+							avatar: friendToAdd.avatar,
+						},
+					},
 				}
 			);
 			await User.updateOne(
