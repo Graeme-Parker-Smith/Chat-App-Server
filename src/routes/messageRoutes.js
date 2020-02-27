@@ -66,6 +66,7 @@ io.on('connection', socket => {
 					return;
 				}
 				const thisChannel = channels[0];
+				const msgExpiry = thisChannel.msgExpiry;
 				// not recommended. Use Channel.updateOne instead
 				thisChannel.messages.push({
 					creator,
