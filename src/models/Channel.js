@@ -11,11 +11,7 @@ const messageSchema = new mongoose.Schema({
 	roomName: String,
 	isImage: Boolean,
 	isVideo: Boolean,
-	createdAt: { type: Date, default: Date.now },
-	expireAt: { type: Date, default: undefined },
 });
-
-messageSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 
 const channelSchema = new mongoose.Schema({
 	name: {
@@ -33,7 +29,6 @@ const channelSchema = new mongoose.Schema({
 	},
 	createdAt: { type: Date, default: Date.now },
 	expireAt: { type: Date, default: undefined },
-	msgExpiry: { type: Number, default: undefined },
 });
 
 channelSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });

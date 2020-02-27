@@ -58,7 +58,6 @@ router.post('/channels', async (req, res) => {
 			messages: [],
 			avatar: avatar || '',
 			expireAt: shouldExpire ? moment().add(3, 'seconds') : undefined,
-			msgExpiry: msgExpiry ? msgExpiry : undefined,
 		});
 		await channel.save();
 		console.log('Channel saved!');
