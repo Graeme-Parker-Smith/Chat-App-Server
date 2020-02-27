@@ -10,6 +10,8 @@ const path = require('path');
 const User = mongoose.model('User');
 const Img = mongoose.model('Img');
 
+const moment = require('moment');
+
 const router = express.Router();
 
 router.use(requireAuth);
@@ -55,6 +57,7 @@ router.post('/channels', async (req, res) => {
 			creator,
 			messages: [],
 			avatar: avatar || '',
+			expireAt: shouldExpire ? moment().add(30, 'seconds') : undefined,
 		});
 		await channel.save();
 		console.log('Channel saved!');
