@@ -76,6 +76,7 @@ io.on('connection', socket => {
 					time,
 					isImage,
 					isVideo,
+					expireAt: msgExpiry ? moment().add(msgExpiry, 'seconds') : undefined,
 				});
 				await thisChannel.save();
 				console.log('message saved!');
