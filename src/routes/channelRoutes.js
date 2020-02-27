@@ -41,13 +41,14 @@ router.get('/channels', async (req, res) => {
 });
 
 router.post('/channels', async (req, res) => {
-	const { name, creator, avatar } = req.body;
+	const { name, creator, avatar, shouldExpire } = req.body;
 	if (!name || !creator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
 	console.log('channel name is: ', name);
 	console.log('creator name is: ', creator);
 	console.log('channel avatar is: ', avatar);
+	console.log('shouldExpire: ', shouldExpire);
 	try {
 		const channel = new Channel({
 			name,
