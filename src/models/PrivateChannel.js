@@ -28,6 +28,11 @@ const privateChannelSchema = new mongoose.Schema({
   avatar: {
     type: String
   },
+  createdAt: { type: Date, default: Date.now },
+	expireAt: { type: Date, default: undefined },
 });
+
+privateChannelSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
+
 
 mongoose.model("PrivateChannel", privateChannelSchema);

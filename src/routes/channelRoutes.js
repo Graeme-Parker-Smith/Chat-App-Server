@@ -70,7 +70,7 @@ router.post('/channels', async (req, res) => {
 });
 
 router.post('/privatechannels', async (req, res) => {
-	const { name, creator, avatar } = req.body;
+	const { name, creator, avatar, lifespan } = req.body;
 	if (!name || !creator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
@@ -84,6 +84,7 @@ router.post('/privatechannels', async (req, res) => {
 			messages: [],
 			members: [creator],
 			avatar: avatar || '',
+			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
 		});
 		await channel.save();
 		console.log('Private Channel saved!');
@@ -122,6 +123,31 @@ router.post('/updatechannel', async (req, res) => {
 		res.send({ updatedChannel });
 	} catch (err) {
 		console.error(err);
+		return res.status(422).send({ error: err });
+	}
+});
+
+router.delete('/channels', async (req, res) => {
+	const { username, roomName, channel_id, isPrivate } = req.query;
+	console.log('channel_id', channel_id);
+	console.log('req.body', req.query);
+	try {
+		if (!isPrivate) {
+			await Channel.deleteOne({ _id: channel_id }, function(err) {
+				if (err) throw 'There was a problem trying to delete channel.';
+			});
+		} else {
+			await PrivateChannel.deleteOne({ _id: channel_id }, function(err) {
+				if (err) throw 'There was a problem trying to delete channel.';
+			});
+		}
+		const channels = await Channel.find({});
+		const privateChannels = await PrivateChannel.find({
+			members: username,
+		});
+		res.send({ channels, privateChannels });
+	} catch (err) {
+		console.log(err);
 		return res.status(422).send({ error: err });
 	}
 });
