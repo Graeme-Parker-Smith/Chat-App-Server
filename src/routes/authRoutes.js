@@ -190,4 +190,17 @@ router.post('/updateuser', async (req, res) => {
 	}
 });
 
+router.delete('/user', async (req, res) => {
+	const { user_id } = req.query;
+	try {
+		await User.deleteOne({ _id: user_id }, function(err) {
+			if (err) throw 'Could not delete user';
+		});
+		res.send({ success: 'successfully deleted user' });
+	} catch (err) {
+		console.log(err);
+		return res.status(422).send({ error: err });
+	}
+});
+
 module.exports = router;
