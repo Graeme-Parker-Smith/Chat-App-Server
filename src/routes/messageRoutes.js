@@ -202,4 +202,9 @@ io.on('connection', socket => {
 	});
 });
 
+router.put('/messages', async (req, res) => {
+	const { currentContent, newContent, itemId } = req.query;
+	console.log('req.query', req.query);
+});
+
 module.exports = router;
