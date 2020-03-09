@@ -114,32 +114,33 @@ io.on('connection', socket => {
 	router.get('/messages', async (req, res) => {
 		const { roomName, roomType, room_id } = req.query;
 		const filter = { _id: room_id };
-		let channels;
-		if (roomType === 'public') {
-			channels = await Channel.find(filter);
-		} else if (roomType === 'private') {
-			channels = await PrivateChannel.find(filter);
-		} else if (roomType === 'pm') {
-			channels = await PM.find({ members: { $all: room_id } });
-		} else {
-			console.log('no channels could be found with that filter and/or roomType');
-			return;
-		}
-		const thisChannel = channels[0];
+		// let channels;
+		// if (roomType === 'public') {
+		// 	channels = await Channel.find(filter);
+		// } else if (roomType === 'private') {
+		// 	channels = await PrivateChannel.find(filter);
+		// } else if (roomType === 'pm') {
+		// 	channels = await PM.find({ members: { $all: room_id } });
+		// } else {
+		// 	console.log('no channels could be found with that filter and/or roomType');
+		// 	return;
+		// }
+		// const thisChannel = channels[0];
 		const username = req.user.username;
+		let allMessages = Message.find({channel: room_id});
 		let messages;
 		if (req.query.stateLength) {
-			if (thisChannel.messages.length - req.query.stateLength < 10) {
-				messages = thisChannel.messages;
+			if (allMessages.length - req.query.stateLength < 10) {
+				messages = allMessages
 			} else {
-				messages = thisChannel.messages.slice(
-					Math.max(thisChannel.messages.length - req.query.stateLength - 10, 1)
+				messages = allMessages.slice(
+					Math.max(allMessages.length - req.query.stateLength - 10, 1)
 				);
 			}
-		} else if (thisChannel.messages.length < 20) {
-			messages = thisChannel.messages;
+		} else if (allMessages.length < 20) {
+			messages = allMessages
 		} else {
-			messages = thisChannel.messages.slice(Math.max(thisChannel.messages.length - 19, 1));
+			messages = allMessages.slice(Math.max(allMessages.length - 19, 1));
 		}
 		console.log('messages fetched length is: ', messages.length);
 		// console.log("req.user is: ", req.user);
