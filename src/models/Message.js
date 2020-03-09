@@ -11,10 +11,14 @@ const messageSchema = new mongoose.Schema({
 	roomName: String,
 	isImage: Boolean,
 	isVideo: Boolean,
+	channel: {
+		type: ObjectId,
+		required: true,
+	},
 	createdAt: { type: Date, default: Date.now },
 	expireAt: { type: Date, default: undefined },
 });
 
 messageSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 
-mongoose.model('Channel', messageSchema);
+mongoose.model('Message', messageSchema);
