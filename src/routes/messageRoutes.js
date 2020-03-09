@@ -6,6 +6,7 @@ const requireAuth = require('../middlewares/requireAuth');
 const User = mongoose.model('User');
 const Channel = mongoose.model('Channel');
 const PrivateChannel = mongoose.model('PrivateChannel');
+const Message = mongoose.model('Message');
 const PM = mongoose.model('PM');
 
 const router = express.Router();
@@ -67,8 +68,8 @@ io.on('connection', socket => {
 					return;
 				}
 				const thisChannel = channels[0];
-				// not recommended. Use Channel.updateOne instead
-				thisChannel.messages.push({
+
+				const newMessage = new Message({
 					creator,
 					avatar,
 					content,
@@ -76,8 +77,11 @@ io.on('connection', socket => {
 					time,
 					isImage,
 					isVideo,
+					channel: thisChannel._id,
+					expireAt: thisChannel.expireAt ? thisChannel.expireAt : undefined,
 				});
-				await thisChannel.save();
+				await newMessage.save();
+				// not recommended. Use Channel.updateOne instead
 				console.log('message saved!');
 				await User.findOneAndUpdate({ username: creator }, { $inc: { msgsSent: 1 } });
 			} catch (err) {
