@@ -63,7 +63,7 @@ io.on('connection', socket => {
 				} else if (roomType === 'private') {
 					channels = await PrivateChannel.find(filter);
 				} else if (roomType === 'pm') {
-					channels = await PM.find({ members: { $all: room_id } });
+					channels = await PM.find(filter);
 				} else {
 					console.log('no channels could be found with that filter and/or roomType');
 					return;
@@ -160,8 +160,8 @@ io.on('connection', socket => {
 			const sendingUser = await User.findOne({ _id: sender });
 			const foundUser = await User.findOne({ _id: receiver, 'blocked._id': { $nin: [sendingUser._id] } });
 			console.log('foundUser', foundUser);
-			const tokens = foundUser.tokens;
-			tokens.forEach(token => {
+			if (!foundUser.tokens || foundUser.tokens < 1) throw 'User has no tokens. Cannot send notification';
+			foundUser.tokens.forEach(token => {
 				axios.post('https://exp.host/--/api/v2/push/send', {
 					to: token,
 					sound: 'default',
