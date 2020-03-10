@@ -43,7 +43,7 @@ router.get('/channels', async (req, res) => {
 });
 
 router.post('/channels', async (req, res) => {
-	const { name, creator, avatar, lifespan } = req.body;
+	const { name, creator, avatar, lifespan, msgLife } = req.body;
 	if (!name || !creator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
@@ -51,6 +51,7 @@ router.post('/channels', async (req, res) => {
 	console.log('creator name is: ', creator);
 	console.log('channel avatar is: ', avatar);
 	console.log('lifespan: ', lifespan);
+	console.log('msgLife: ', msgLife);
 	try {
 		const channel = new Channel({
 			name,
@@ -58,6 +59,7 @@ router.post('/channels', async (req, res) => {
 			messages: [],
 			avatar: avatar || '',
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
+			msgLife: msgLife
 		});
 		await channel.save();
 		console.log('Channel saved!');

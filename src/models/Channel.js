@@ -29,6 +29,7 @@ const channelSchema = new mongoose.Schema({
 	},
 	createdAt: { type: Date, default: Date.now },
 	expireAt: { type: Date, default: undefined },
+	msgLife: Number
 });
 
 channelSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });

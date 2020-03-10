@@ -69,6 +69,11 @@ io.on('connection', socket => {
 				}
 				const thisChannel = channels[0];
 
+				let msgHasExpire = false;
+				if ((!thisChannel.expireAt && thisChannel.msgLife) || thisChannel.msgLife > thisChannel.expireAt) {
+					msgHasExpire = true;
+				}
+
 				const newMessage = new Message({
 					creator,
 					avatar,
@@ -78,7 +83,7 @@ io.on('connection', socket => {
 					isImage,
 					isVideo,
 					channel: thisChannel._id,
-					expireAt: thisChannel.expireAt ? thisChannel.expireAt : undefined,
+					expireAt: msgHasExpire ? thisChannel.msgLife : thisChannel.expireAt,
 				});
 				await newMessage.save();
 				// not recommended. Use Channel.updateOne instead
