@@ -127,18 +127,16 @@ io.on('connection', socket => {
 		// }
 		// const thisChannel = channels[0];
 		const username = req.user.username;
-		let allMessages = await Message.find({channel: room_id});
+		let allMessages = await Message.find({ channel: room_id });
 		let messages;
 		if (req.query.stateLength) {
 			if (allMessages.length - req.query.stateLength < 10) {
-				messages = allMessages
+				messages = allMessages;
 			} else {
-				messages = allMessages.slice(
-					Math.max(allMessages.length - req.query.stateLength - 10, 1)
-				);
+				messages = allMessages.slice(Math.max(allMessages.length - req.query.stateLength - 10, 1));
 			}
 		} else if (allMessages.length < 20) {
-			messages = allMessages
+			messages = allMessages;
 		} else {
 			messages = allMessages.slice(Math.max(allMessages.length - 19, 1));
 		}
@@ -209,9 +207,9 @@ io.on('connection', socket => {
 
 router.put('/messages', async (req, res) => {
 	const { currentContent, newContent, itemId } = req.body;
-	const thisChannel = await Channel.findOne({ 'messages._id': itemId });
+	const thisMessage = await Message.findOne({ _id: itemId });
 	// need to set MessageSchema as mongoose model
-	const updatedMessage = thisChannel.messages.updateOne({ _id: itemId }, { $set: { content: newContent } });
+	const updatedMessage = await Message.updateOne({ _id: itemId }, { $set: { content: newContent } });
 	console.log('updatedMsg', updatedMessage);
 });
 
