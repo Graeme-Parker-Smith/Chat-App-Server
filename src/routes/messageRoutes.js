@@ -88,7 +88,6 @@ io.on('connection', socket => {
 					expireAt: msgHasExpire ? moment().add(thisChannel.msgLife, 'minutes') : thisChannel.expireAt,
 				});
 				await newMessage.save();
-				// not recommended. Use Channel.updateOne instead
 				console.log('message saved!');
 				await User.findOneAndUpdate({ username: creator }, { $inc: { msgsSent: 1 } });
 			} catch (err) {
