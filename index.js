@@ -2,6 +2,7 @@ require('./src/models/User');
 require('./src/models/Channel');
 require('./src/models/PrivateChannel');
 require('./src/models/PM');
+require('./src/models/Message');
 require('./src/models/Img');
 let localMongoUri;
 localMongoUri = require('./keys').localMongoUri;

@@ -127,7 +127,7 @@ io.on('connection', socket => {
 		// }
 		// const thisChannel = channels[0];
 		const username = req.user.username;
-		let allMessages = Message.find({channel: room_id});
+		let allMessages = await Message.find({channel: room_id});
 		let messages;
 		if (req.query.stateLength) {
 			if (allMessages.length - req.query.stateLength < 10) {
