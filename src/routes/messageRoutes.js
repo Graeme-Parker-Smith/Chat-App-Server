@@ -207,10 +207,10 @@ io.on('connection', socket => {
 
 router.put('/messages', async (req, res) => {
 	const { currentContent, newContent, itemId } = req.body;
-	const thisMessage = await Message.findOne({ _id: itemId });
 	// need to set MessageSchema as mongoose model
-	const updatedMessage = await Message.updateOne({ _id: itemId }, { $set: { content: newContent } });
-	console.log('updatedMsg', updatedMessage);
+	await Message.findOneAndUpdate({ _id: itemId }, { $set: { content: newContent } });
+	const thisMessage = await Message.findOne({ _id: itemId });
+	res.send({ updatedMessage: thisMessage });
 });
 
 module.exports = router;
