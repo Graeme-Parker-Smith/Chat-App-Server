@@ -1,6 +1,8 @@
 const express = require('express');
 const axios = require('axios');
 const mongoose = require('mongoose');
+const moment = require('moment');
+
 
 const requireAuth = require('../middlewares/requireAuth');
 const User = mongoose.model('User');
@@ -83,7 +85,7 @@ io.on('connection', socket => {
 					isImage,
 					isVideo,
 					channel: thisChannel._id,
-					expireAt: msgHasExpire ? thisChannel.msgLife : thisChannel.expireAt,
+					expireAt: msgHasExpire ? moment().add(thisChannel.msgLife, 'minutes') : thisChannel.expireAt,
 				});
 				await newMessage.save();
 				// not recommended. Use Channel.updateOne instead
