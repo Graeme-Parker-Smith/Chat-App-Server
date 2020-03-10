@@ -3,7 +3,6 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const moment = require('moment');
 
-
 const requireAuth = require('../middlewares/requireAuth');
 const User = mongoose.model('User');
 const Channel = mongoose.model('Channel');
@@ -69,6 +68,7 @@ io.on('connection', socket => {
 					console.log('no channels could be found with that filter and/or roomType');
 					return;
 				}
+				console.log('channels', channels);
 				const thisChannel = channels[0];
 
 				let msgHasExpire = false;
@@ -157,14 +157,15 @@ io.on('connection', socket => {
 		console.log('server receives pm');
 		try {
 			const { sender, messageBody, receiver } = req.body;
-			const sendingUser = await User.findOne({ username: sender });
-			const foundUser = await User.findOne({ username: receiver, blocked: { _id: { $nin: sendingUser._id } } });
+			const sendingUser = await User.findOne({ _id: sender });
+			const foundUser = await User.findOne({ _id: receiver, 'blocked._id': { $nin: [sendingUser._id] } });
+			console.log('foundUser', foundUser);
 			const tokens = foundUser.tokens;
 			tokens.forEach(token => {
 				axios.post('https://exp.host/--/api/v2/push/send', {
 					to: token,
 					sound: 'default',
-					title: sender,
+					title: sendingUser.username,
 					body: messageBody,
 				});
 			});

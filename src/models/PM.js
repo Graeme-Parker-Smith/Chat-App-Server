@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
 	creator: {
@@ -11,11 +11,13 @@ const messageSchema = new mongoose.Schema({
 	roomName: String,
 	isImage: Boolean,
 	isVideo: Boolean,
+	expireAt: { type: Date, default: undefined },
+	msgLife: { type: Number, default: undefined },
 });
 
 const pmSchema = new mongoose.Schema({
-  members: [String],
-  messages: [messageSchema],
+	members: [String],
+	messages: [messageSchema],
 });
 
-mongoose.model("PM", pmSchema);
+mongoose.model('PM', pmSchema);
