@@ -72,7 +72,7 @@ router.post('/channels', async (req, res) => {
 });
 
 router.post('/privatechannels', async (req, res) => {
-	const { name, creator, avatar, lifespan } = req.body;
+	const { name, creator, avatar, lifespan, msgLife } = req.body;
 	if (!name || !creator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
@@ -87,6 +87,7 @@ router.post('/privatechannels', async (req, res) => {
 			members: [creator],
 			avatar: avatar || '',
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
+			msgLife: msgLife
 		});
 		await channel.save();
 		console.log('Private Channel saved!');
