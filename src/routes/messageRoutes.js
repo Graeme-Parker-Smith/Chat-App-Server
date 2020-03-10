@@ -213,4 +213,11 @@ router.put('/messages', async (req, res) => {
 	res.send({ updatedMessage: thisMessage });
 });
 
+router.delete('/messages', async (req, res) => {
+	const { itemId } = req.query;
+	console.log('req.query', req.query);
+	await Message.findOneAndDelete({ _id: itemId });
+	res.send({ success: 'Message Deleted!' });
+});
+
 module.exports = router;
