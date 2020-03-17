@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const User = mongoose.model('User');
 const Img = mongoose.model('Img');
+const io = app.get('io');
 
 const moment = require('moment');
 
@@ -59,7 +60,7 @@ router.post('/channels', async (req, res) => {
 			messages: [],
 			avatar: avatar || '',
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
-			msgLife: msgLife
+			msgLife: msgLife,
 		});
 		await channel.save();
 		console.log('Channel saved!');
@@ -87,7 +88,7 @@ router.post('/privatechannels', async (req, res) => {
 			members: [creator],
 			avatar: avatar || '',
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
-			msgLife: msgLife
+			msgLife: msgLife,
 		});
 		await channel.save();
 		console.log('Private Channel saved!');
@@ -333,8 +334,9 @@ router.post('/invite', async (req, res) => {
 		res.send({ updatedChannel });
 	} catch (err) {
 		console.log(err);
-		return res.stats(422).send({ error: 'could not find user with that name' });
+		return res.status(422).send({ error: 'could not find user with that name' });
 	}
 });
+
 
 module.exports = router;

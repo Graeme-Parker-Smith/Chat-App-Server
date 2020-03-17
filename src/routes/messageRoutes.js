@@ -227,4 +227,21 @@ router.delete('/messages', async (req, res) => {
 	res.send({ success: 'Message Deleted!' });
 });
 
+router.put('/kick', async (req, res) => {
+	const { removee, roomName } = req.body;
+	console.log('roomName', roomName);
+	try {
+		const updatedChannel = await PrivateChannel.updateOne({ name: roomName }, { $pull: { members: removee } });
+		console.log(removee, 'kicked!');
+		console.log('updatedChannel', updatedChannel);
+		const user = getUser(removee);
+		console.log('foundUser is: ', user);
+		io.in(user.room).emit('kick', { roomName, removee });
+		res.send({ updatedChannel });
+	} catch (err) {
+		console.log(err);
+		return res.status(422).send({ error: 'could not find user with that name' });
+	}
+});
+
 module.exports = router;
