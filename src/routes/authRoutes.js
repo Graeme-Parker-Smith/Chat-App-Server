@@ -19,7 +19,7 @@ const router = express.Router();
 router.post('/video', upload.single('videoFile'), async (req, res) => {
 	try {
 		console.log('req.file: ', req.file);
-		cloudinary.uploader.upload(req.file.path, { resource_type: 'video' }, function(error, result) {
+		cloudinary.uploader.upload(req.file.path, { resource_type: 'video' }, function (error, result) {
 			console.log(result, error);
 			return res.send({ secure_url: result.secure_url });
 		});
@@ -118,6 +118,18 @@ router.post('/pushtoken', async (req, res) => {
 	}
 });
 
+router.post('/signout', async (req, res) => {
+	try {
+		const { user_id, pushToken } = req.body;
+		if (!user_id || !pushToken) throw 'could not remove pushToken from user';
+		const updatedUser = await User.findOneAndUpdate({ _id: user_id }, { $pull: { tokens: pushToken } });
+		res.send({ userData: updatedUser });
+	} catch (err) {
+		console.log(err);
+		res.send(err);
+	}
+});
+
 router.post('/updateuser', async (req, res) => {
 	const { username, newUsername, newPassword, newAvatar } = req.body;
 	if (!newPassword) {
@@ -172,8 +184,8 @@ router.post('/updateuser', async (req, res) => {
 			{ arrayFilters: [{ 't._id': foundUser._id }] }
 		);
 		let channels = await Channel.find({});
-		await channels.forEach(async function(doc) {
-			let newMessages = doc.messages.map(message => {
+		await channels.forEach(async function (doc) {
+			let newMessages = doc.messages.map((message) => {
 				if (message.creator === foundUser.username) {
 					message.creator = newUsername;
 					message.avatar = newAvatar;
@@ -193,7 +205,7 @@ router.post('/updateuser', async (req, res) => {
 router.delete('/user', async (req, res) => {
 	const { user_id } = req.query;
 	try {
-		await User.deleteOne({ _id: user_id }, function(err) {
+		await User.deleteOne({ _id: user_id }, function (err) {
 			if (err) throw 'Could not delete user';
 		});
 		res.send({ success: 'successfully deleted user' });
