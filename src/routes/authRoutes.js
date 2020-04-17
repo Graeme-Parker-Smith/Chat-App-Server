@@ -184,6 +184,9 @@ router.post('/updateuser', async (req, res) => {
 			{ arrayFilters: [{ 't._id': foundUser._id }] }
 		);
 		let channels = await Channel.find({});
+
+		// need to update private channel msgs and pms too!!
+
 		await channels.forEach(async function (doc) {
 			let newMessages = doc.messages.map((message) => {
 				if (message.creator === foundUser.username) {

@@ -16,7 +16,7 @@ const messageSchema = new mongoose.Schema({
 });
 
 const pmSchema = new mongoose.Schema({
-	members: [String],
+	members: [mongoose.Schema.Types.ObjectId],
 	messages: [messageSchema],
 });
 
