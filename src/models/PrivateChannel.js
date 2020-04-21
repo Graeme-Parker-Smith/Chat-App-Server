@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
 	creator: {
@@ -14,22 +14,21 @@ const messageSchema = new mongoose.Schema({
 });
 
 const privateChannelSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  creator: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
-  members: [String],
-  messages: [messageSchema],
-  avatar: {
-    type: String
-  },
-  createdAt: { type: Date, default: Date.now },
+	name: {
+		type: String,
+		required: true,
+		unique: true,
+	},
+	creator: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
+	members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+	messages: [messageSchema],
+	avatar: {
+		type: String,
+	},
+	createdAt: { type: Date, default: Date.now },
 	expireAt: { type: Date, default: undefined },
 });
 
 privateChannelSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 
-
-mongoose.model("PrivateChannel", privateChannelSchema);
+mongoose.model('PrivateChannel', privateChannelSchema);
