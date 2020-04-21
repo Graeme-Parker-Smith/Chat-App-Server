@@ -45,7 +45,8 @@ router.get('/channels', async (req, res) => {
 
 router.post('/channels', async (req, res) => {
 	const { name, creator, avatar, lifespan, msgLife } = req.body;
-	if (!name || !creator) {
+	const foundCreator = await User.find({ username: creator });
+	if (!name || !creator || !foundCreator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
 	console.log('channel name is: ', name);
@@ -53,10 +54,11 @@ router.post('/channels', async (req, res) => {
 	console.log('channel avatar is: ', avatar);
 	console.log('lifespan: ', lifespan);
 	console.log('msgLife: ', msgLife);
+	console.log('creator id', foundCreator._id);
 	try {
 		const channel = new Channel({
 			name,
-			creator,
+			creator: foundCreator._id,
 			messages: [],
 			avatar: avatar || '',
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
@@ -74,18 +76,20 @@ router.post('/channels', async (req, res) => {
 
 router.post('/privatechannels', async (req, res) => {
 	const { name, creator, avatar, lifespan, msgLife } = req.body;
-	if (!name || !creator) {
+	const foundCreator = await User.find({ username: creator });
+	if (!name || !creator || !foundCreator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
 	console.log('channel name is: ', name);
 	console.log('creator name is: ', creator);
 	console.log('channel avatar is: ', avatar);
+
 	try {
 		const channel = new PrivateChannel({
 			name,
-			creator,
+			creator: foundCreator._id,
 			messages: [],
-			members: [creator],
+			members: [foundCreator._id],
 			avatar: avatar || '',
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
 			msgLife: msgLife,
