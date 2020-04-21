@@ -141,6 +141,7 @@ router.delete('/channels', async (req, res) => {
 	console.log('channel_id', channel_id);
 	console.log('req.body', req.query);
 	try {
+		const foundUser = await User.findOne({ username: username });
 		if (!isPrivate) {
 			await Channel.deleteOne({ _id: channel_id }, function (err) {
 				if (err) throw 'There was a problem trying to delete channel.';
@@ -152,7 +153,7 @@ router.delete('/channels', async (req, res) => {
 		}
 		const channels = await Channel.find({});
 		const privateChannels = await PrivateChannel.find({
-			members: username,
+			members: foundUser._id,
 		});
 		res.send({ channels, privateChannels });
 	} catch (err) {
