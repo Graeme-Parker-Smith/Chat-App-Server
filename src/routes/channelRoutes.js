@@ -100,8 +100,12 @@ router.post('/privatechannels', async (req, res) => {
 		console.log(channel);
 		res.send(channel);
 	} catch (err) {
-		console.log('problem creating channel');
-		res.status(422).send({ error: err.message });
+		console.log('problem creating channel', err);
+		if (err.message.includes('duplicate key')) {
+			res.send({ error: 'Channel Name Taken.' });
+		} else {
+			res.status(422).send({ error: err.message });
+		}
 	}
 });
 
