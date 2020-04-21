@@ -19,10 +19,7 @@ const privateChannelSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  creator: {
-    type: String,
-    required: true
-  },
+  creator: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
   members: [String],
   messages: [messageSchema],
   avatar: {
