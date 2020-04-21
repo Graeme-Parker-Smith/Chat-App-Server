@@ -16,7 +16,7 @@ const messageSchema = new mongoose.Schema({
 });
 
 const pmSchema = new mongoose.Schema({
-	members: [mongoose.Schema.Types.ObjectId],
+	members: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
 	messages: [messageSchema],
 });
 

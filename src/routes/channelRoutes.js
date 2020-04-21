@@ -37,7 +37,7 @@ router.get('/channels', async (req, res) => {
 		members: currentUser.username,
 	});
 	const PMs = await PM.find({
-		members: currentUser.username,
+		members: currentUser._id,
 	});
 	console.log('username is: ', currentUser.username);
 	res.send({ channels, privateChannels, PMs, currentUser });
@@ -137,11 +137,11 @@ router.delete('/channels', async (req, res) => {
 	console.log('req.body', req.query);
 	try {
 		if (!isPrivate) {
-			await Channel.deleteOne({ _id: channel_id }, function(err) {
+			await Channel.deleteOne({ _id: channel_id }, function (err) {
 				if (err) throw 'There was a problem trying to delete channel.';
 			});
 		} else {
-			await PrivateChannel.deleteOne({ _id: channel_id }, function(err) {
+			await PrivateChannel.deleteOne({ _id: channel_id }, function (err) {
 				if (err) throw 'There was a problem trying to delete channel.';
 			});
 		}
@@ -168,7 +168,7 @@ router.post('/addfriend', async (req, res) => {
 		console.log('friendToAdd', friendToAdd);
 		if (!shouldRemove) {
 			// if added friend does not have current user added
-			let imAddingFirst = !friendToAdd.pending.some(f => {
+			let imAddingFirst = !friendToAdd.pending.some((f) => {
 				console.log('f._id', f._id);
 				console.log('currentUser._id', currentUser._id);
 				console.log('f._id === currentUser._id', `${f._id}` === `${currentUser._id}`);
@@ -235,18 +235,18 @@ router.post('/addfriend', async (req, res) => {
 				);
 			}
 			console.log(`${friendToAdd.username} added as a friend!`);
-			const foundPM = await PM.findOne({ members: { $all: [username, friendName] } });
+			const foundPM = await PM.findOne({ members: { $all: [currentUser._id, friendToAdd._id] } });
 			if (!foundPM) {
 				const newPM = new PM({
 					messages: [],
-					members: [username, friendName],
+					members: [currentUser._id, friendToAdd._id],
 				});
 				await newPM.save();
 			}
 			const tokens = friendToAdd.tokens;
 			if (imAddingFirst) {
 			}
-			tokens.forEach(token => {
+			tokens.forEach((token) => {
 				axios.post('https://exp.host/--/api/v2/push/send', {
 					to: token,
 					sound: 'default',
@@ -337,6 +337,5 @@ router.post('/invite', async (req, res) => {
 		return res.status(422).send({ error: 'could not find user with that name' });
 	}
 });
-
 
 module.exports = router;
