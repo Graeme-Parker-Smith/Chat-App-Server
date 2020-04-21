@@ -34,7 +34,7 @@ router.get('/channels', async (req, res) => {
 	const currentUser = req.user;
 	const channels = await Channel.find({});
 	const privateChannels = await PrivateChannel.find({
-		members: currentUser.username,
+		members: currentUser._id,
 	});
 	const PMs = await PM.find({
 		members: currentUser._id,
@@ -45,7 +45,7 @@ router.get('/channels', async (req, res) => {
 
 router.post('/channels', async (req, res) => {
 	const { name, creator, avatar, lifespan, msgLife } = req.body;
-	const foundCreator = await User.find({ username: creator });
+	const foundCreator = await User.findOne({ username: creator });
 	if (!name || !creator || !foundCreator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
@@ -54,7 +54,7 @@ router.post('/channels', async (req, res) => {
 	console.log('channel avatar is: ', avatar);
 	console.log('lifespan: ', lifespan);
 	console.log('msgLife: ', msgLife);
-	console.log('creator id', foundCreator._id);
+	console.log('creator id', foundCreator);
 	try {
 		const channel = new Channel({
 			name,
@@ -76,7 +76,8 @@ router.post('/channels', async (req, res) => {
 
 router.post('/privatechannels', async (req, res) => {
 	const { name, creator, avatar, lifespan, msgLife } = req.body;
-	const foundCreator = await User.find({ username: creator });
+	const foundCreator = await User.findOne({ username: creator });
+	console.log('foundCreator', foundCreator);
 	if (!name || !creator || !foundCreator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
@@ -332,7 +333,12 @@ router.post('/invite', async (req, res) => {
 	const { invitee, roomName } = req.body;
 	console.log('roomName', roomName);
 	try {
-		const updatedChannel = await PrivateChannel.updateOne({ name: roomName }, { $push: { members: invitee } });
+		const foundInvitee = await User.findOne({ username: invitee });
+		if (!foundInvitee) throw 'could not find invitee';
+		const updatedChannel = await PrivateChannel.updateOne(
+			{ name: roomName },
+			{ $push: { members: foundInvitee._id } }
+		);
 		console.log(invitee, 'added!');
 		console.log('updatedChannel', updatedChannel);
 		res.send({ updatedChannel });

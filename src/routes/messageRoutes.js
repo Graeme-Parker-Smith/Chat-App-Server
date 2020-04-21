@@ -16,7 +16,7 @@ const io = app.get('io');
 router.use(requireAuth);
 const { addUser, removeUser, getUser, getUsersInRoom } = require('../helpers/userHelpers');
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
 	console.log('a user connected to socket :D');
 	app.set('socket', socket);
 
@@ -110,8 +110,8 @@ io.on('connection', socket => {
 
 	socket.on('usersearch', async ({ currentUser, searchKey }) => {
 		const searchResults = await User.find({ username: { $regex: searchKey } });
-		const results = searchResults.filter(r => {
-			if (r.blocked.some(user => `${user._id}` === `${currentUser._id}`)) return false;
+		const results = searchResults.filter((r) => {
+			if (r.blocked.some((user) => `${user._id}` === `${currentUser._id}`)) return false;
 			return true;
 		});
 		socket.emit('usersearch', { results });
@@ -160,7 +160,7 @@ io.on('connection', socket => {
 			const foundUser = await User.findOne({ _id: receiver, 'blocked._id': { $nin: [sendingUser._id] } });
 			console.log('foundUser', foundUser);
 			if (!foundUser.tokens || foundUser.tokens < 1) throw 'User has no tokens. Cannot send notification';
-			foundUser.tokens.forEach(token => {
+			foundUser.tokens.forEach((token) => {
 				axios.post('https://exp.host/--/api/v2/push/send', {
 					to: token,
 					sound: 'default',
@@ -230,7 +230,12 @@ router.delete('/messages', async (req, res) => {
 router.put('/kick', async (req, res) => {
 	const { removee, roomName } = req.body;
 	try {
-		const updatedChannel = await PrivateChannel.updateOne({ name: roomName }, { $pull: { members: removee } });
+		const foundRemovee = await User.findOne({ username: removee });
+		if (!foundRemovee) throw 'could not find removee';
+		const updatedChannel = await PrivateChannel.updateOne(
+			{ name: roomName },
+			{ $pull: { members: foundRemovee._id } }
+		);
 		const user = getUser(removee);
 		io.in(user.room).emit('kick', { roomName, removee });
 		res.send({ updatedChannel });
