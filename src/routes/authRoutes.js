@@ -187,6 +187,8 @@ router.post('/updateuser', async (req, res) => {
 
 		// need to update private channel msgs and pms too!!
 
+
+		// because msgs are no longer nested within channels, update previous msgs code no longer works here!
 		await channels.forEach(async function (doc) {
 			let newMessages = doc.messages.map((message) => {
 				if (message.creator === foundUser.username) {
