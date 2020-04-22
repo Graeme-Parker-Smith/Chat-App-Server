@@ -186,10 +186,11 @@ router.post('/updateuser', async (req, res) => {
 		);
 		// let channels = await Channel.find({});
 
-		await Message.updateMany({creator: foundUser.username}, {$set: {creator: newUsername || foundUser.username,
-			avatar: newAvatar || foundUser.avatar,}});
+		await Message.updateMany(
+			{ creator: foundUser.username },
+			{ $set: { creator: newUsername || foundUser.username, avatar: newAvatar || foundUser.avatar } }
+		);
 		// need to update private channel msgs and pms too!!
-
 
 		// because msgs are no longer nested within channels, update previous msgs code no longer works here!
 		// await channels.forEach(async function (doc) {
@@ -206,7 +207,11 @@ router.post('/updateuser', async (req, res) => {
 		res.send({ userData: updatedUser });
 	} catch (err) {
 		console.log(err);
-		return res.status(422).send({ error: 'could not find user' });
+		if (err.message.includes('duplicate key')) {
+			res.send({ error: 'Channel Name Taken.' });
+		} else {
+			res.send({ error: 'Unable to update User.' });
+		}
 	}
 });
 
