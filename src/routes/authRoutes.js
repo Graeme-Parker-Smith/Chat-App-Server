@@ -208,7 +208,7 @@ router.post('/updateuser', async (req, res) => {
 	} catch (err) {
 		console.log(err);
 		if (err.message.includes('duplicate key')) {
-			res.send({ error: 'Channel Name Taken.' });
+			res.send({ error: 'Username Taken.' });
 		} else {
 			res.send({ error: 'Unable to update User.' });
 		}
