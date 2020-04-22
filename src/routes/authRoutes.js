@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = mongoose.model('User');
 const Channel = mongoose.model('Channel');
+const Message = mongoose.model('Message');
 const Img = mongoose.model('Img');
 let localSCRT;
 localSCRT = require('../../keys').localSCRT;
@@ -183,23 +184,25 @@ router.post('/updateuser', async (req, res) => {
 			},
 			{ arrayFilters: [{ 't._id': foundUser._id }] }
 		);
-		let channels = await Channel.find({});
+		// let channels = await Channel.find({});
 
+		await Message.updateMany({creator: foundUser.username}, {$set: {creator: newUsername || foundUser.username,
+			avatar: newAvatar || foundUser.avatar,}});
 		// need to update private channel msgs and pms too!!
 
 
 		// because msgs are no longer nested within channels, update previous msgs code no longer works here!
-		await channels.forEach(async function (doc) {
-			let newMessages = doc.messages.map((message) => {
-				if (message.creator === foundUser.username) {
-					message.creator = newUsername;
-					message.avatar = newAvatar;
-				}
-				return message;
-			});
+		// await channels.forEach(async function (doc) {
+		// 	let newMessages = doc.messages.map((message) => {
+		// 		if (message.creator === foundUser.username) {
+		// 			message.creator = newUsername;
+		// 			message.avatar = newAvatar;
+		// 		}
+		// 		return message;
+		// 	});
 
-			await Channel.update({ name: doc.name }, { $set: { messages: newMessages } });
-		});
+		// 	await Channel.update({ name: doc.name }, { $set: { messages: newMessages } });
+		// });
 		res.send({ userData: updatedUser });
 	} catch (err) {
 		console.log(err);
