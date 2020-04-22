@@ -140,7 +140,11 @@ router.post('/updatechannel', async (req, res) => {
 		res.send({ updatedChannel });
 	} catch (err) {
 		console.error(err);
-		return res.status(422).send({ error: err });
+		if (err.message.includes('duplicate key')) {
+			res.send({ error: 'Channel Name Taken.' });
+		} else {
+			res.send({ error: 'Unable to Create Channel.' });
+		}
 	}
 });
 
