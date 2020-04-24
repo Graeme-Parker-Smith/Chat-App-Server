@@ -166,6 +166,7 @@ io.on('connection', (socket) => {
 					sound: 'default',
 					title: sendingUser.username,
 					body: messageBody,
+					_displayInForeground: true,
 				});
 			});
 		} catch (err) {
