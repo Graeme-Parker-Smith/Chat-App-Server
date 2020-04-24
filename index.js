@@ -17,9 +17,9 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+const messageRoutes = require('./src/routes/messageRoutes');
 const authRoutes = require('./src/routes/authRoutes');
 const channelRoutes = require('./src/routes/channelRoutes');
-const messageRoutes = require('./src/routes/messageRoutes');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -37,7 +37,7 @@ mongoose.connect(mongoUri, {
 mongoose.connection.on('connected', () => {
 	console.log('Connected to mongo instance');
 });
-mongoose.connection.on('error', err => {
+mongoose.connection.on('error', (err) => {
 	console.error('Error connecting to mongo', err);
 });
 

@@ -14,11 +14,169 @@ const router = express.Router();
 const io = app.get('io');
 
 router.use(requireAuth);
+let idList = {};
 const { addUser, removeUser, getUser, getUsersInRoom } = require('../helpers/userHelpers');
 
 io.on('connection', (socket) => {
+	router.post('/addfriend', async (req, res) => {
+		try {
+			const { username, friendName, shouldRemove, shouldBlock } = req.body;
+			if (!username || !friendName) throw 'Could not add friend';
+			console.log('friendName', friendName);
+			const currentUser = await User.findOne({ username });
+			console.log('currentUser.username', currentUser.username);
+			const friendToAdd = await User.findOne({
+				username: friendName,
+				'blocked._id': { $nin: [currentUser._id] },
+			});
+			if (!friendToAdd) throw 'could not find user with that name';
+			console.log('friendToAdd', friendToAdd);
+			if (!shouldRemove) {
+				// if added friend does not have current user added
+				let imAddingFirst = !friendToAdd.pending.some((f) => {
+					console.log('f._id', f._id);
+					console.log('currentUser._id', currentUser._id);
+					console.log('f._id === currentUser._id', `${f._id}` === `${currentUser._id}`);
+					return `${f._id}` === `${currentUser._id}`;
+				});
+				console.log('imAddingFirst: ', imAddingFirst);
+				if (imAddingFirst) {
+					// update user
+					await User.updateOne(
+						{ _id: currentUser._id },
+						{
+							$addToSet: {
+								pending: {
+									username: friendToAdd.username,
+									_id: friendToAdd._id,
+									avatar: friendToAdd.avatar,
+								},
+							},
+							$pull: { blocked: { _id: friendToAdd._id } },
+						}
+					);
+					// update friend
+					await User.updateOne(
+						{ _id: friendToAdd._id },
+						{
+							$addToSet: {
+								requestsReceived: {
+									username: currentUser.username,
+									_id: currentUser._id,
+									avatar: currentUser.avatar,
+								},
+							},
+						}
+					);
+				} else {
+					// if friend being added has already sent request to user
+					// update user
+					await User.updateOne(
+						{ _id: currentUser._id },
+						{
+							$addToSet: {
+								friends: {
+									username: friendToAdd.username,
+									_id: friendToAdd._id,
+									avatar: friendToAdd.avatar,
+								},
+							},
+							$pull: { blocked: { _id: friendToAdd._id }, requestsReceived: { _id: friendToAdd._id } },
+						}
+					);
+					// update friend
+					await User.updateOne(
+						{ _id: friendToAdd._id },
+						{
+							$addToSet: {
+								friends: {
+									username: currentUser.username,
+									_id: currentUser._id,
+									avatar: currentUser.avatar,
+								},
+							},
+							$pull: { pending: { _id: currentUser._id } },
+						}
+					);
+				}
+				console.log(`${friendToAdd.username} added as a friend!`);
+				const foundPM = await PM.findOne({ members: { $all: [currentUser._id, friendToAdd._id] } });
+				if (!foundPM) {
+					const newPM = new PM({
+						messages: [],
+						members: [currentUser._id, friendToAdd._id],
+					});
+					await newPM.save();
+				}
+				console.log('friend id', idList[friendToAdd._id]);
+				socket.broadcast.to(idList[friendToAdd._id]).emit('update_user', { newData: 'new Data' });
+				const tokens = friendToAdd.tokens;
+				tokens.forEach((token) => {
+					axios.post('https://exp.host/--/api/v2/push/send', {
+						to: token,
+						sound: 'default',
+						title: imAddingFirst ? 'Friend Request' : 'New Friend!',
+						body: imAddingFirst
+							? `${currentUser.username} sent you a friend request!`
+							: `${currentUser.username} added you as a friend!`,
+						_displayInForeground: true,
+						data: { destination: 'Dash', initialIndex: imAddingFirst ? 2 : 1 },
+					});
+				});
+			} else if (shouldBlock) {
+				await User.updateOne(
+					{ _id: currentUser._id },
+					{
+						$pull: {
+							friends: { _id: friendToAdd._id },
+							pending: { _id: friendToAdd._id },
+							requestsReceived: { _id: friendToAdd._id },
+						},
+						$addToSet: {
+							blocked: {
+								username: friendToAdd.username,
+								_id: friendToAdd._id,
+								avatar: friendToAdd.avatar,
+							},
+						},
+					}
+				);
+				await User.updateOne(
+					{ _id: friendToAdd._id },
+					{
+						$pull: {
+							friends: { _id: currentUser._id },
+							pending: { _id: currentUser._id },
+							requestsReceived: { _id: currentUser._id },
+						},
+					}
+				);
+			} else if (shouldRemove) {
+				await User.updateOne(
+					{ _id: currentUser._id },
+					{ $pull: { friends: { _id: friendToAdd._id }, pending: { _id: friendToAdd._id } } }
+				);
+				await User.updateOne(
+					{ _id: friendToAdd._id },
+					{ $pull: { friends: { _id: currentUser._id }, requestsReceived: { _id: currentUser._id } } }
+				);
+			}
+			const updatedUser = await User.findOne({ username });
+
+			res.send({ currentUser: updatedUser });
+		} catch (err) {
+			console.log(err);
+			return res.status(422).send({ error: 'could not find user with that name' });
+		}
+	});
+
 	console.log('a user connected to socket :D');
 	app.set('socket', socket);
+
+	socket.on('register_socket', ({ userId }) => {
+		idList[userId] = socket.id;
+		console.log('idList', idList);
+	});
 
 	socket.on('join', ({ name, userId, room }, callback) => {
 		console.log(`user joined -- user: ${name}, room: ${room}, socketId -- ${socket.id}`);
@@ -164,7 +322,7 @@ io.on('connection', (socket) => {
 			console.log('users In this PM room', usersInThisRoom);
 			console.log('foundUser', foundUser);
 			if (usersInThisRoom.some((user) => String(user.id) === String(foundUser._id))) {
-				console.log("notification blocked.")
+				console.log('notification blocked.');
 				return;
 			}
 			if (!foundUser.tokens || foundUser.tokens < 1) throw 'User has no tokens. Cannot send notification';
