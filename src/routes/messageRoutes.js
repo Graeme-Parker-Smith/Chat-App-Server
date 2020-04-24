@@ -109,7 +109,17 @@ io.on('connection', (socket) => {
 					await newPM.save();
 				}
 				console.log('friend id', idList[friendToAdd._id]);
-				socket.broadcast.to(idList[friendToAdd._id]).emit('update_user', { newData: 'new Data' });
+				const channels = await Channel.find({});
+				const privateChannels = await PrivateChannel.find({
+					members: currentUser._id,
+				});
+				const PMs = await PM.find({
+					members: friendToAdd._id,
+				});
+				const updatedFriend = await User.findOne({ _id: friendToAdd._id });
+				socket.broadcast
+					.to(idList[friendToAdd._id])
+					.emit('update_user', { newData: { channels, privateChannels, PMs, currentUser: updatedFriend } });
 				const tokens = friendToAdd.tokens;
 				tokens.forEach((token) => {
 					axios.post('https://exp.host/--/api/v2/push/send', {
