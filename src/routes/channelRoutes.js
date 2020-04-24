@@ -272,6 +272,8 @@ router.post('/addfriend', async (req, res) => {
 					body: imAddingFirst
 						? `${currentUser.username} sent you a friend request!`
 						: `${currentUser.username} added you as a friend!`,
+					_displayInForeground: true,
+					data: { destination: imAddingFirst ? 'Dash' : 'Dash' },
 				});
 			});
 		} else if (shouldBlock) {

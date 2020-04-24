@@ -167,6 +167,7 @@ io.on('connection', (socket) => {
 					title: sendingUser.username,
 					body: messageBody,
 					_displayInForeground: true,
+					data: { data: 'goes here' },
 				});
 			});
 		} catch (err) {
