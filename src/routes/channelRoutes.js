@@ -262,8 +262,6 @@ router.post('/addfriend', async (req, res) => {
 				await newPM.save();
 			}
 			const tokens = friendToAdd.tokens;
-			if (imAddingFirst) {
-			}
 			tokens.forEach((token) => {
 				axios.post('https://exp.host/--/api/v2/push/send', {
 					to: token,
@@ -273,7 +271,7 @@ router.post('/addfriend', async (req, res) => {
 						? `${currentUser.username} sent you a friend request!`
 						: `${currentUser.username} added you as a friend!`,
 					_displayInForeground: true,
-					data: { destination: imAddingFirst ? 'Dash' : 'Dash' },
+					data: { destination: 'Dash', initialIndex: imAddingFirst ? 2 : 1 },
 				});
 			});
 		} else if (shouldBlock) {
