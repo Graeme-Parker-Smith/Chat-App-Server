@@ -20,9 +20,9 @@ io.on('connection', (socket) => {
 	console.log('a user connected to socket :D');
 	app.set('socket', socket);
 
-	socket.on('join', ({ name, room }, callback) => {
+	socket.on('join', ({ name, userId, room }, callback) => {
 		console.log(`user joined -- user: ${name}, room: ${room}, socketId -- ${socket.id}`);
-		const { error, user } = addUser({ name, room, id: socket.id });
+		const { error, user } = addUser({ name, room, id: userId });
 
 		if (error) {
 			removeUser(name);
@@ -155,10 +155,18 @@ io.on('connection', (socket) => {
 	router.post('/sendnotification', async (req, res) => {
 		console.log('server receives pm');
 		try {
-			const { sender, messageBody, receiver } = req.body;
+			const { sender, messageBody, receiver, room_id } = req.body;
 			const sendingUser = await User.findOne({ _id: sender });
 			const foundUser = await User.findOne({ _id: receiver, 'blocked._id': { $nin: [sendingUser._id] } });
+			const foundPM = await PM.findOne({ _id: room_id });
+			if (!foundPM) throw 'could not find PM object matching given id';
+			const usersInThisRoom = getUsersInRoom(room_id);
+			console.log('users In this PM room', usersInThisRoom);
 			console.log('foundUser', foundUser);
+			if (usersInThisRoom.some((user) => String(user.id) === String(foundUser._id))) {
+				console.log("notification blocked.")
+				return;
+			}
 			if (!foundUser.tokens || foundUser.tokens < 1) throw 'User has no tokens. Cannot send notification';
 			foundUser.tokens.forEach((token) => {
 				axios.post('https://exp.host/--/api/v2/push/send', {
