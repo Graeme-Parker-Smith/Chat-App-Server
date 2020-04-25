@@ -111,7 +111,7 @@ io.on('connection', (socket) => {
 				console.log('friend id', idList[friendToAdd._id]);
 				const channels = await Channel.find({});
 				const privateChannels = await PrivateChannel.find({
-					members: currentUser._id,
+					members: friendToAdd._id,
 				});
 				const PMs = await PM.find({
 					members: friendToAdd._id,
@@ -163,7 +163,7 @@ io.on('connection', (socket) => {
 				);
 				const channels = await Channel.find({});
 				const privateChannels = await PrivateChannel.find({
-					members: currentUser._id,
+					members: friendToAdd._id,
 				});
 				const PMs = await PM.find({
 					members: friendToAdd._id,
@@ -185,7 +185,7 @@ io.on('connection', (socket) => {
 
 			const channels = await Channel.find({});
 			const privateChannels = await PrivateChannel.find({
-				members: currentUser._id,
+				members: friendToAdd._id,
 			});
 			const PMs = await PM.find({
 				members: friendToAdd._id,
