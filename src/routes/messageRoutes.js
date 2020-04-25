@@ -161,6 +161,17 @@ io.on('connection', (socket) => {
 						},
 					}
 				);
+				const channels = await Channel.find({});
+				const privateChannels = await PrivateChannel.find({
+					members: currentUser._id,
+				});
+				const PMs = await PM.find({
+					members: friendToAdd._id,
+				});
+				const updatedFriend = await User.findOne({ _id: friendToAdd._id });
+				socket.broadcast
+					.to(idList[friendToAdd._id])
+					.emit('update_user', { newData: { channels, privateChannels, PMs, currentUser: updatedFriend } });
 			} else if (shouldRemove) {
 				await User.updateOne(
 					{ _id: currentUser._id },
@@ -171,6 +182,19 @@ io.on('connection', (socket) => {
 					{ $pull: { friends: { _id: currentUser._id }, requestsReceived: { _id: currentUser._id } } }
 				);
 			}
+
+			const channels = await Channel.find({});
+			const privateChannels = await PrivateChannel.find({
+				members: currentUser._id,
+			});
+			const PMs = await PM.find({
+				members: friendToAdd._id,
+			});
+			const updatedFriend = await User.findOne({ _id: friendToAdd._id });
+			socket.broadcast
+				.to(idList[friendToAdd._id])
+				.emit('update_user', { newData: { channels, privateChannels, PMs, currentUser: updatedFriend } });
+
 			const updatedUser = await User.findOne({ username });
 
 			res.send({ currentUser: updatedUser });
