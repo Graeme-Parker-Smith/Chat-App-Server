@@ -5,6 +5,7 @@ const requireAuth = require('../middlewares/requireAuth');
 const Channel = mongoose.model('Channel');
 const PrivateChannel = mongoose.model('PrivateChannel');
 const PM = mongoose.model('PM');
+const Message = mongoose.model('Message');
 const fs = require('fs');
 const path = require('path');
 const User = mongoose.model('User');
@@ -33,14 +34,31 @@ router.get('/channels', async (req, res) => {
 	}
 	const currentUser = req.user;
 	const channels = await Channel.find({});
+	console.log('channels Length', channels.length);
+
+	const addMessageLengths = async (channelList) => {
+		let result = [];
+		await channelList.forEach(async (chan) => {
+			let thisChansMessages = await Message.countDocuments({ channel: chan._doc._id });
+
+			let moarChan = { ...chan._doc, msgCount: thisChansMessages };
+			await result.push(moarChan);
+			// console.log('result', result);
+		});
+		// console.log('Finalresult', result);
+		return result;
+	};
 	const privateChannels = await PrivateChannel.find({
 		members: currentUser._id,
 	});
+	const moarChannels = await addMessageLengths(channels);
+	const moarPrivates = await addMessageLengths(privateChannels);
 	const PMs = await PM.find({
 		members: currentUser._id,
 	});
+	console.log('channels', moarChannels);
 	console.log('username is: ', currentUser.username);
-	res.send({ channels, privateChannels, PMs, currentUser });
+	res.send({ channels: moarChannels, privateChannels: moarPrivates, PMs, currentUser });
 });
 
 router.post('/channels', async (req, res) => {
@@ -173,8 +191,6 @@ router.delete('/channels', async (req, res) => {
 		return res.status(422).send({ error: err });
 	}
 });
-
-
 
 router.post('/unblock', async (req, res) => {
 	try {
