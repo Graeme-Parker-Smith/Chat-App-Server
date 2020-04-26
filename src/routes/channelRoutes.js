@@ -38,14 +38,25 @@ router.get('/channels', async (req, res) => {
 
 	const addMessageLengths = async (channelList) => {
 		let result = [];
-		await channelList.forEach(async (chan) => {
-			let thisChansMessages = await Message.countDocuments({ channel: chan._doc._id });
-
-			let moarChan = { ...chan._doc, msgCount: thisChansMessages };
+		for (const chan of channelList) {
+			// if (channelList.length === 3) {
+			// console.log('chan', chan);
+			// }
+			let thisChansMessages = await Message.countDocuments({ channel: chan._doc ? chan._doc._id : chan._id });
+			// console.log('thiscm', thisChansMessages);
+			let moarChan;
+			if (chan._doc) {
+				moarChan = { ...chan._doc, msgCount: thisChansMessages };
+			} else {
+				moarChan = { ...chan, msgCount: thisChansMessages };
+			}
+			// console.log('moarChan', moarChan);
 			await result.push(moarChan);
-			// console.log('result', result);
-		});
-		// console.log('Finalresult', result);
+			if (moarChan.members) {
+				// console.log('result', result);
+			}
+		}
+		console.log('Finalresult', result);
 		return result;
 	};
 	const privateChannels = await PrivateChannel.find({
@@ -56,9 +67,25 @@ router.get('/channels', async (req, res) => {
 	const PMs = await PM.find({
 		members: currentUser._id,
 	});
-	console.log('channels', moarChannels);
+	const moarPMs = await addMessageLengths(PMs);
+	// let moarPMs = [];
+	// await PMs.forEach(async (chan) => {
+	// 	let thisChansMessages = await Message.countDocuments({ channel: chan._doc ? chan._doc._id : chan._id });
+	// 	let moarChan;
+	// 	if (chan._doc) {
+	// 		moarChan = { ...chan._doc, msgCount: thisChansMessages };
+	// 	} else {
+	// 		moarChan = { ...chan, msgCount: thisChansMessages };
+	// 	}
+	// 	moarPMs.push(moarChan);
+	// 	// console.log("moarChan", moarChan)
+	// });
+	console.log('moarChannels', moarChannels);
+	console.log('moarPrivates', moarPrivates);
+	console.log('moarPMs', moarPMs);
+	// console.log('channels', moarChannels);
 	console.log('username is: ', currentUser.username);
-	res.send({ channels: moarChannels, privateChannels: moarPrivates, PMs, currentUser });
+	res.send({ channels: moarChannels, privateChannels: moarPrivates, PMs: moarPMs, currentUser });
 });
 
 router.post('/channels', async (req, res) => {
