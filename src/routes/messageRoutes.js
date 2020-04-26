@@ -68,6 +68,31 @@ io.on('connection', (socket) => {
 							},
 						}
 					);
+
+					const channels = await Channel.find({});
+					const privateChannels = await PrivateChannel.find({
+						members: friendToAdd._id,
+					});
+					const PMs = await PM.find({
+						members: friendToAdd._id,
+					});
+					const updatedFriend = await User.findOne({ _id: friendToAdd._id });
+					socket.broadcast.to(idList[friendToAdd._id]).emit('update_user', {
+						newData: { channels, privateChannels, PMs, currentUser: updatedFriend },
+					});
+					const tokens = friendToAdd.tokens;
+					tokens.forEach((token) => {
+						axios.post('https://exp.host/--/api/v2/push/send', {
+							to: token,
+							sound: 'default',
+							title: imAddingFirst ? 'Friend Request' : 'New Friend!',
+							body: imAddingFirst
+								? `${currentUser.username} sent you a friend request!`
+								: `${currentUser.username} added you as a friend!`,
+							_displayInForeground: true,
+							data: { destination: 'Dash', initialIndex: imAddingFirst ? 2 : 1 },
+						});
+					});
 				} else {
 					// if friend being added has already sent request to user
 					// update user
