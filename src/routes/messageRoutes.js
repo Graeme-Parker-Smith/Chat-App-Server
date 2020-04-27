@@ -15,7 +15,7 @@ const io = app.get('io');
 
 router.use(requireAuth);
 let idList = {};
-const { addUser, removeUser, getUser, getUsersInRoom } = require('../helpers/userHelpers');
+const { addUser, removeUser, getUser, getUsersInRoom, countUsers } = require('../helpers/userHelpers');
 
 io.on('connection', (socket) => {
 	router.post('/addfriend', async (req, res) => {
@@ -232,6 +232,8 @@ io.on('connection', (socket) => {
 	console.log('a user connected to socket :D');
 	app.set('socket', socket);
 
+
+
 	socket.on('register_socket', ({ userId }) => {
 		idList[userId] = socket.id;
 		console.log('idList', idList);
@@ -248,6 +250,9 @@ io.on('connection', (socket) => {
 
 		socket.join(user.room);
 		console.log('user.room', getUsersInRoom(user.room));
+
+		let channelsData = countUsers();
+		io.emit('channelsData', { channelsData });
 
 		io.to(user.room).emit('roomData', {
 			room: user.room,

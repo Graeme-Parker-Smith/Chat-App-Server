@@ -47,4 +47,18 @@ const getUsersInRoom = room => {
   return users.filter(user => user.room === room);
 };
 
-module.exports = { addUser, removeUser, getUser, getUsersInRoom };
+const countUsers = () => {
+  let roomCounts = {};
+  users.forEach((user) => {
+    console.log('users', users);
+    console.log('user', user);
+    if (roomCounts[user.room]) {
+      roomCounts[user.room] += 1;
+    } else {
+      roomCounts[user.room] = 1;
+    }
+  });
+  return roomCounts;
+};
+
+module.exports = { addUser, removeUser, getUser, getUsersInRoom, countUsers };
