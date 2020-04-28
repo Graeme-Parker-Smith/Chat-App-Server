@@ -363,10 +363,10 @@ io.on('connection', (socket) => {
 				messages = allMessages.slice(Math.max(allMessages.length - req.query.stateLength - 10, 1));
 			}
 			// for fetchMessages
-		} else if (allMessages.length < 20) {
+		} else if (allMessages.length < 11) {
 			messages = allMessages;
 		} else {
-			messages = allMessages.slice(Math.max(allMessages.length - 19, 1));
+			messages = allMessages.slice(Math.max(allMessages.length - 9, 1));
 		}
 		console.log('messages fetched length is: ', messages.length);
 		// console.log("req.user is: ", req.user);

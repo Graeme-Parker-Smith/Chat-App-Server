@@ -84,7 +84,7 @@ router.get('/channels', async (req, res) => {
 });
 
 router.post('/channels', async (req, res) => {
-	const { name, creator, avatar, lifespan, msgLife } = req.body;
+	const { name, creator, avatar, description, lifespan, msgLife } = req.body;
 	const foundCreator = await User.findOne({ username: creator });
 	if (!name || !creator || !foundCreator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
@@ -101,6 +101,7 @@ router.post('/channels', async (req, res) => {
 			creator: foundCreator._id,
 			messages: [],
 			avatar: avatar || '',
+			description,
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
 			msgLife: msgLife,
 		});
