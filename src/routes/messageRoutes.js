@@ -30,7 +30,6 @@ io.on('connection', (socket) => {
 				'blocked._id': { $nin: [currentUser._id] },
 			});
 			if (!friendToAdd) throw 'could not find user with that name';
-			console.log('friendToAdd', friendToAdd);
 			if (!shouldRemove) {
 				// if added friend does not have current user added
 				let imAddingFirst = !friendToAdd.pending.some((f) => {
@@ -232,8 +231,6 @@ io.on('connection', (socket) => {
 	console.log('a user connected to socket :D');
 	app.set('socket', socket);
 
-
-
 	socket.on('register_socket', ({ userId }) => {
 		idList[userId] = socket.id;
 		console.log('idList', idList);
@@ -290,7 +287,6 @@ io.on('connection', (socket) => {
 					console.log('no channels could be found with that filter and/or roomType');
 					return;
 				}
-				console.log('channels', channels);
 				const thisChannel = channels[0];
 
 				let msgHasExpire = false;
@@ -328,6 +324,8 @@ io.on('connection', (socket) => {
 			});
 		}
 		socket.leave(room);
+		let channelsData = countUsers();
+		io.emit('channelsData', { channelsData });
 	});
 
 	socket.on('usersearch', async ({ currentUser, searchKey }) => {
@@ -357,12 +355,14 @@ io.on('connection', (socket) => {
 		const username = req.user.username;
 		let allMessages = await Message.find({ channel: room_id });
 		let messages;
+		// for fetchEarlierMessages
 		if (req.query.stateLength) {
 			if (allMessages.length - req.query.stateLength < 10) {
 				messages = allMessages;
 			} else {
 				messages = allMessages.slice(Math.max(allMessages.length - req.query.stateLength - 10, 1));
 			}
+			// for fetchMessages
 		} else if (allMessages.length < 20) {
 			messages = allMessages;
 		} else {
@@ -383,8 +383,6 @@ io.on('connection', (socket) => {
 			const foundPM = await PM.findOne({ _id: room_id });
 			if (!foundPM) throw 'could not find PM object matching given id';
 			const usersInThisRoom = getUsersInRoom(room_id);
-			console.log('users In this PM room', usersInThisRoom);
-			console.log('foundUser', foundUser);
 			if (usersInThisRoom.some((user) => String(user.id) === String(foundUser._id))) {
 				console.log('notification blocked.');
 				return;
@@ -454,7 +452,6 @@ router.put('/messages', async (req, res) => {
 
 router.delete('/messages', async (req, res) => {
 	const { itemId } = req.query;
-	console.log('req.query', req.query);
 	await Message.findOneAndDelete({ _id: itemId });
 	res.send({ success: 'Message Deleted!' });
 });

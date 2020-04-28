@@ -34,7 +34,6 @@ router.get('/channels', async (req, res) => {
 	}
 	const currentUser = req.user;
 	const channels = await Channel.find({});
-	console.log('channels Length', channels.length);
 
 	const addMessageLengths = async (channelList) => {
 		let result = [];
@@ -56,7 +55,6 @@ router.get('/channels', async (req, res) => {
 				// console.log('result', result);
 			}
 		}
-		console.log('Finalresult', result);
 		return result;
 	};
 	const privateChannels = await PrivateChannel.find({
@@ -80,9 +78,6 @@ router.get('/channels', async (req, res) => {
 	// 	moarPMs.push(moarChan);
 	// 	// console.log("moarChan", moarChan)
 	// });
-	console.log('moarChannels', moarChannels);
-	console.log('moarPrivates', moarPrivates);
-	console.log('moarPMs', moarPMs);
 	// console.log('channels', moarChannels);
 	console.log('username is: ', currentUser.username);
 	res.send({ channels: moarChannels, privateChannels: moarPrivates, PMs: moarPMs, currentUser });
@@ -111,7 +106,6 @@ router.post('/channels', async (req, res) => {
 		});
 		await channel.save();
 		console.log('Channel saved!');
-		console.log(channel);
 		res.send(channel);
 	} catch (err) {
 		console.log('problem creating channel', err);
@@ -146,7 +140,6 @@ router.post('/privatechannels', async (req, res) => {
 		});
 		await channel.save();
 		console.log('Private Channel saved!');
-		console.log(channel);
 		res.send(channel);
 	} catch (err) {
 		console.log('problem creating channel', err);
