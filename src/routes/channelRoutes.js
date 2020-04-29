@@ -119,7 +119,7 @@ router.post('/channels', async (req, res) => {
 });
 
 router.post('/privatechannels', async (req, res) => {
-	const { name, creator, avatar, lifespan, msgLife } = req.body;
+	const { name, creator, avatar, description, lifespan, msgLife } = req.body;
 	const foundCreator = await User.findOne({ username: creator });
 	console.log('foundCreator', foundCreator);
 	if (!name || !creator || !foundCreator) {
@@ -136,6 +136,7 @@ router.post('/privatechannels', async (req, res) => {
 			messages: [],
 			members: [foundCreator._id],
 			avatar: avatar || '',
+			description,
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
 			msgLife: msgLife,
 		});
