@@ -248,14 +248,16 @@ io.on('connection', (socket) => {
 		socket.join(user.room);
 		console.log('user.room', getUsersInRoom(user.room));
 
-		let channelsData = countUsers();
-		console.log('channelsData', channelsData);
-		io.emit('channelsData', { channelsData });
+		if (room !== socket.id) {
+			let channelsData = countUsers();
+			console.log('channelsData', channelsData);
+			io.emit('channelsData', { channelsData });
 
-		io.to(user.room).emit('roomData', {
-			room: user.room,
-			users: getUsersInRoom(user.room),
-		});
+			io.to(user.room).emit('roomData', {
+				room: user.room,
+				users: getUsersInRoom(user.room),
+			});
+		}
 
 		callback();
 	});

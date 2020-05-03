@@ -8,15 +8,22 @@ const addUser = ({ id, name, room }) => {
 		(user) => user.id === id
 	);
 	const userAlreadyHere = users.find((user) => user.room === room && user.name === name);
-	console.log('previous user connections exist');
 
 	if (!name || !room) return { error: 'Username and room are required' };
 	if (existingUser) {
-		return { error: 'Username is taken' };
+		// return { error: 'Username is taken' };
+		let updatedUsers = users.map((user) => {
+			if (user.id === id) {
+				return { id, name, room };
+			} else {
+				return user;
+			}
+		});
+		users = updatedUsers;
+	} else {
+		const user = { id, name, room };
+		users.push(user);
 	}
-
-	const user = { id, name, room };
-	users.push(user);
 	if (userAlreadyHere) {
 		users = users.filter((user) => {
 			return user.name !== name || (user.name === name && user.id === id);
