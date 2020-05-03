@@ -249,6 +249,7 @@ io.on('connection', (socket) => {
 		console.log('user.room', getUsersInRoom(user.room));
 
 		let channelsData = countUsers();
+		console.log('channelsData', channelsData);
 		io.emit('channelsData', { channelsData });
 
 		io.to(user.room).emit('roomData', {
@@ -325,6 +326,7 @@ io.on('connection', (socket) => {
 		}
 		socket.leave(room);
 		let channelsData = countUsers();
+		console.log('channelsData', channelsData);
 		io.emit('channelsData', { channelsData });
 	});
 
