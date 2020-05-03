@@ -10,6 +10,7 @@ const addUser = ({ id, name, room }) => {
 	const userAlreadyHere = users.find((user) => user.room === room && user.name === name);
 
 	if (!name || !room) return { error: 'Username and room are required' };
+	const user = { id, name, room };
 	if (existingUser) {
 		// return { error: 'Username is taken' };
 		let updatedUsers = users.map((user) => {
@@ -21,7 +22,6 @@ const addUser = ({ id, name, room }) => {
 		});
 		users = updatedUsers;
 	} else {
-		const user = { id, name, room };
 		users.push(user);
 	}
 	if (userAlreadyHere) {
