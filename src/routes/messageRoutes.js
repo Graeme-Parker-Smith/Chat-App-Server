@@ -236,6 +236,12 @@ io.on('connection', (socket) => {
 		console.log('idList', idList);
 	});
 
+	socket.on('get_channels_data', ({ socketId }) => {
+		let channelsData = countUsers();
+		console.log('channelsData', channelsData);
+		io.to(socketId).emit('channelsData', { channelsData });
+	});
+
 	socket.on('join', ({ name, userId, room }, callback) => {
 		console.log(`user joined -- user: ${name}, room: ${room}, socketId -- ${socket.id}`);
 		const { error, user } = addUser({ name, room, id: userId });
