@@ -235,23 +235,23 @@ router.post('/unblock', async (req, res) => {
 	}
 });
 
-router.post('/invite', async (req, res) => {
-	const { invitee, roomName } = req.body;
-	console.log('roomName', roomName);
-	try {
-		const foundInvitee = await User.findOne({ username: invitee });
-		if (!foundInvitee) throw 'could not find invitee';
-		const updatedChannel = await PrivateChannel.updateOne(
-			{ name: roomName },
-			{ $push: { members: foundInvitee._id } }
-		);
-		console.log(invitee, 'added!');
-		console.log('updatedChannel', updatedChannel);
-		res.send({ updatedChannel });
-	} catch (err) {
-		console.log(err);
-		return res.status(422).send({ error: 'could not find user with that name' });
-	}
-});
+// router.post('/invite', async (req, res) => {
+// 	const { invitee, roomName } = req.body;
+// 	console.log('roomName', roomName);
+// 	try {
+// 		const foundInvitee = await User.findOne({ username: invitee });
+// 		if (!foundInvitee) throw 'could not find invitee';
+// 		const updatedChannel = await PrivateChannel.updateOne(
+// 			{ name: roomName },
+// 			{ $push: { members: foundInvitee._id } }
+// 		);
+// 		console.log(invitee, 'added!');
+// 		console.log('updatedChannel', updatedChannel);
+// 		res.send({ updatedChannel });
+// 	} catch (err) {
+// 		console.log(err);
+// 		return res.status(422).send({ error: 'could not find user with that name' });
+// 	}
+// });
 
 module.exports = router;
