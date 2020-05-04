@@ -238,7 +238,7 @@ io.on('connection', (socket) => {
 
 	socket.on('get_channels_data', ({ socketId }) => {
 		let channelsData = countUsers();
-		console.log('channelsData', channelsData);
+		console.log('get_channels_data');
 		io.to(socketId).emit('channelsData', { channelsData });
 	});
 
