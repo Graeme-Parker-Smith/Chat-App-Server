@@ -25,6 +25,7 @@ const channelSchema = new mongoose.Schema({
 		type: String,
 	},
 	description: String,
+	mature: Boolean,
 	createdAt: { type: Date, default: Date.now },
 	expireAt: { type: Date, default: undefined },
 	msgLife: Number,
