@@ -233,7 +233,7 @@ io.on('connection', (socket) => {
 
 	socket.on('register_socket', ({ userId }) => {
 		idList[userId] = socket.id;
-		console.log('idList', idList);
+		// console.log('idList', idList);
 	});
 
 	socket.on('get_channels_data', ({ socketId }) => {
@@ -251,12 +251,13 @@ io.on('connection', (socket) => {
 		}
 
 		socket.join(user.room);
-		console.log('user.room', getUsersInRoom(user.room));
+		// console.log('user.room', getUsersInRoom(user.room));
 
 		let channelsData = countUsers();
 		console.log('channelsData', channelsData);
 		io.emit('channelsData', { channelsData });
 		if (room !== socket.id) {
+			console.log('users in room', getUsersInRoom(user.room));
 			io.to(user.room).emit('roomData', {
 				room: user.room,
 				users: getUsersInRoom(user.room),

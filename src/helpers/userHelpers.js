@@ -43,7 +43,7 @@ const removeUser = (name) => {
 	console.log(name);
 	let filteredUsers = users.filter((user) => user.name !== name);
 	users = filteredUsers;
-	console.log(users);
+	// console.log(users);
 	return user;
 };
 
@@ -54,19 +54,19 @@ const getUsersInRoom = (room) => {
 };
 
 const countUsers = () => {
-	console.log('roomCounts', roomCounts);
+	// console.log('roomCounts', roomCounts);
 	roomCounts = {};
-	console.log('roomCounts', roomCounts);
+	// console.log('roomCounts', roomCounts);
 	users.forEach((user) => {
-		console.log('users', users);
-		console.log('user', user);
+		// console.log('users', users);
+		// console.log('user', user);
 		if (roomCounts[user.room]) {
 			roomCounts[user.room] += 1;
 		} else {
 			roomCounts[user.room] = 1;
 		}
 	});
-	console.log('roomCounts', roomCounts);
+	// console.log('roomCounts', roomCounts);
 	return roomCounts;
 };
 
