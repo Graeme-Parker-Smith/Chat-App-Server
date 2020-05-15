@@ -84,7 +84,7 @@ router.get('/channels', async (req, res) => {
 });
 
 router.post('/channels', async (req, res) => {
-	const { name, creator, avatar, description, lifespan, msgLife } = req.body;
+	const { name, creator, avatar, description, lifespan, msgLife, mature } = req.body;
 	const foundCreator = await User.findOne({ username: creator });
 	if (!name || !creator || !foundCreator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
@@ -104,6 +104,7 @@ router.post('/channels', async (req, res) => {
 			description,
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
 			msgLife: msgLife,
+			mature
 		});
 		await channel.save();
 		console.log('Channel saved!');
@@ -119,7 +120,7 @@ router.post('/channels', async (req, res) => {
 });
 
 router.post('/privatechannels', async (req, res) => {
-	const { name, creator, avatar, description, lifespan, msgLife } = req.body;
+	const { name, creator, avatar, description, lifespan, msgLife, mature } = req.body;
 	const foundCreator = await User.findOne({ username: creator });
 	console.log('foundCreator', foundCreator);
 	if (!name || !creator || !foundCreator) {
@@ -139,6 +140,7 @@ router.post('/privatechannels', async (req, res) => {
 			description,
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
 			msgLife: msgLife,
+			mature
 		});
 		await channel.save();
 		console.log('Private Channel saved!');
