@@ -63,7 +63,14 @@ router.post('/signup', async (req, res) => {
 	// const user = new User({ username, password });
 	// await user.save();
 	try {
-		const user = new User({ username, password, avatar: avatar, gender, age, createdAt: new Date().toLocaleDateString() });
+		const user = new User({
+			username,
+			password,
+			avatar: avatar,
+			gender,
+			age,
+			createdAt: new Date().toLocaleDateString(),
+		});
 		await user.save();
 		console.log('User Created!: ', username);
 
@@ -134,7 +141,7 @@ router.post('/signout', async (req, res) => {
 });
 
 router.post('/updateuser', async (req, res) => {
-	const { username, newUsername, newPassword, newAvatar } = req.body;
+	const { username, newUsername, newPassword, newAvatar, newGender, newAge } = req.body;
 	// if (!newPassword) {
 	// 	console.log('newpassword is falsy');
 	// }
@@ -147,6 +154,8 @@ router.post('/updateuser', async (req, res) => {
 				{
 					username: newUsername || foundUser.username,
 					avatar: newAvatar || foundUser.avatar,
+					age: newAge || foundUser.age,
+					gender: newGender || foundUser.gender,
 				},
 				{ new: true }
 			);
@@ -157,6 +166,8 @@ router.post('/updateuser', async (req, res) => {
 					username: newUsername || foundUser.username,
 					password: newPassword,
 					avatar: newAvatar || foundUser.avatar,
+					age: newAge || foundUser.age,
+					gender: newGender || foundUser.gender,
 				},
 				{ new: true }
 			);
@@ -166,6 +177,8 @@ router.post('/updateuser', async (req, res) => {
 			_id: updatedUser._id,
 			username: updatedUser.username,
 			avatar: updatedUser.avatar,
+			gender: updatedUser.gender,
+			age: updatedUser.age,
 		};
 		await User.updateMany(
 			{
