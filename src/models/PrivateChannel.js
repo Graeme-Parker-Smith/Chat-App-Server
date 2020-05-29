@@ -25,6 +25,7 @@ const privateChannelSchema = new mongoose.Schema({
 	avatar: {
 		type: String,
 	},
+	mature: Boolean,
 	description: String,
 	createdAt: { type: Date, default: Date.now },
 	expireAt: { type: Date, default: undefined },

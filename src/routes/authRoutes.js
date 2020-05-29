@@ -59,11 +59,11 @@ router.post('/signup', async (req, res) => {
 	// 	var saved_img = await new_img.save();
 	// 	// console.log('saved img: ', saved_img);
 	// }
-	const { username, password, avatar } = req.body;
+	const { username, password, avatar, gender, age } = req.body;
 	// const user = new User({ username, password });
 	// await user.save();
 	try {
-		const user = new User({ username, password, avatar: avatar, createdAt: new Date().toLocaleDateString() });
+		const user = new User({ username, password, avatar: avatar, gender, age, createdAt: new Date().toLocaleDateString() });
 		await user.save();
 		console.log('User Created!: ', username);
 
@@ -135,9 +135,9 @@ router.post('/signout', async (req, res) => {
 
 router.post('/updateuser', async (req, res) => {
 	const { username, newUsername, newPassword, newAvatar } = req.body;
-	if (!newPassword) {
-		console.log('newpassword is falsy');
-	}
+	// if (!newPassword) {
+	// 	console.log('newpassword is falsy');
+	// }
 	try {
 		const foundUser = await User.findOne({ username });
 		let updatedUser;
