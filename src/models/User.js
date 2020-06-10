@@ -12,8 +12,6 @@ const userSchema = new mongoose.Schema({
 		required: true,
 	},
 	avatar: String,
-	gender: String,
-	age: Number,
 	friends: Array,
 	requestsReceived: Array,
 	pending: Array,
