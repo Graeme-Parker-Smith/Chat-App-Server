@@ -31,7 +31,7 @@ router.get('/channels', async (req, res) => {
 	if (!req.user) {
 		return res.send({ error: 'user could not be found' });
 	}
-	console.log('req.user is: ', req.user);
+	// console.log('req.user is: ', req.user);
 	const currentUser = req.user;
 	const channels = await Channel.find({});
 

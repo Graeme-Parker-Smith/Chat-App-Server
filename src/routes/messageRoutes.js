@@ -347,40 +347,45 @@ io.on('connection', (socket) => {
 	});
 
 	router.get('/messages', async (req, res) => {
-		const { roomName, roomType, room_id } = req.query;
-		const filter = { _id: room_id };
-		// let channels;
-		// if (roomType === 'public') {
-		// 	channels = await Channel.find(filter);
-		// } else if (roomType === 'private') {
-		// 	channels = await PrivateChannel.find(filter);
-		// } else if (roomType === 'pm') {
-		// 	channels = await PM.find({ members: { $all: room_id } });
-		// } else {
-		// 	console.log('no channels could be found with that filter and/or roomType');
-		// 	return;
-		// }
-		// const thisChannel = channels[0];
-		const username = req.user.username;
-		let allMessages = await Message.find({ channel: room_id });
-		let messages;
-		// for fetchEarlierMessages
-		if (req.query.stateLength) {
-			if (allMessages.length - req.query.stateLength < 10) {
+		try {
+			const { roomName, roomType, room_id } = req.query;
+			console.log('roomId', room_id);
+			const filter = { _id: room_id };
+			// let channels;
+			// if (roomType === 'public') {
+			// 	channels = await Channel.find(filter);
+			// } else if (roomType === 'private') {
+			// 	channels = await PrivateChannel.find(filter);
+			// } else if (roomType === 'pm') {
+			// 	channels = await PM.find({ members: { $all: room_id } });
+			// } else {
+			// 	console.log('no channels could be found with that filter and/or roomType');
+			// 	return;
+			// }
+			// const thisChannel = channels[0];
+			const username = req.user.username;
+			let allMessages = await Message.find({ channel: room_id });
+			let messages;
+			// for fetchEarlierMessages
+			if (req.query.stateLength) {
+				if (allMessages.length - req.query.stateLength < 10) {
+					messages = allMessages;
+				} else {
+					messages = allMessages.slice(Math.max(allMessages.length - req.query.stateLength - 10, 1));
+				}
+				// for fetchMessages
+			} else if (allMessages.length < 20) {
 				messages = allMessages;
 			} else {
-				messages = allMessages.slice(Math.max(allMessages.length - req.query.stateLength - 10, 1));
+				messages = allMessages.slice(Math.max(allMessages.length - 19, 1));
 			}
-			// for fetchMessages
-		} else if (allMessages.length < 20) {
-			messages = allMessages;
-		} else {
-			messages = allMessages.slice(Math.max(allMessages.length - 19, 1));
+			console.log('messages fetched length is: ', messages.length);
+			// console.log("req.user is: ", req.user);
+			// const allUsers = getUsersInRoom(thisChannel);
+			res.send({ messages, username });
+		} catch (err) {
+			console.log(err);
 		}
-		console.log('messages fetched length is: ', messages.length);
-		// console.log("req.user is: ", req.user);
-		// const allUsers = getUsersInRoom(thisChannel);
-		res.send({ messages, username });
 	});
 
 	router.post('/sendnotification', async (req, res) => {
