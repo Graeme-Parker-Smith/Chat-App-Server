@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
-let localSCRT;
-localSCRT = require("../../keys").localSCRT;
+// let localSCRT;
+// localSCRT = require("../../keys").localSCRT;
 const SCRT = process.env.JWT_SECRET || localSCRT;
 
 module.exports = (req, res, next) => {

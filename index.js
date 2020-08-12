@@ -4,8 +4,8 @@ require('./src/models/PrivateChannel');
 require('./src/models/PM');
 require('./src/models/Message');
 require('./src/models/Img');
-let localMongoUri;
-localMongoUri = require('./keys').localMongoUri;
+// let localMongoUri;
+// localMongoUri = require('./keys').localMongoUri;
 const express = require('express');
 // const keyword omitted to make app variable global and thus accessible in routes files
 app = express();
