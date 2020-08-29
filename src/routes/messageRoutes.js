@@ -221,6 +221,10 @@ io.on('connection', (socket) => {
 
 			const updatedUser = await User.findOne({ username });
 
+			socket.broadcast
+				.to(idList[currentUser._id])
+				.emit('update_user', { newData: { channels, privateChannels, PMs, currentUser: updatedUser } });
+
 			res.send({ currentUser: updatedUser });
 		} catch (err) {
 			console.log(err);
@@ -454,8 +458,27 @@ io.on('connection', (socket) => {
 			res.status(422).send({ error: err.message });
 		}
 	});
-});
 
+	router.post('/invite', async (req, res) => {
+		const { invitee, roomName } = req.body;
+		console.log('roomName', roomName);
+		try {
+			const foundInvitee = await User.findOne({ username: invitee });
+			if (!foundInvitee) throw 'could not find invitee';
+			const updatedChannel = await PrivateChannel.updateOne(
+				{ name: roomName },
+				{ $push: { members: foundInvitee._id } }
+			);
+			console.log(invitee, 'added!');
+			console.log('updatedChannel', updatedChannel);
+			socket.broadcast.to(idList[foundInvitee._id]).emit('invite', { roomName, invitee });
+			res.send({ updatedChannel });
+		} catch (err) {
+			console.log(err);
+			return res.status(422).send({ error: 'could not find user with that name' });
+		}
+	});
+});
 router.put('/messages', async (req, res) => {
 	const { currentContent, newContent, itemId } = req.body;
 	// need to set MessageSchema as mongoose model
@@ -468,26 +491,6 @@ router.delete('/messages', async (req, res) => {
 	const { itemId } = req.query;
 	await Message.findOneAndDelete({ _id: itemId });
 	res.send({ success: 'Message Deleted!' });
-});
-
-router.post('/invite', async (req, res) => {
-	const { invitee, roomName } = req.body;
-	console.log('roomName', roomName);
-	try {
-		const foundInvitee = await User.findOne({ username: invitee });
-		if (!foundInvitee) throw 'could not find invitee';
-		const updatedChannel = await PrivateChannel.updateOne(
-			{ name: roomName },
-			{ $push: { members: foundInvitee._id } }
-		);
-		console.log(invitee, 'added!');
-		console.log('updatedChannel', updatedChannel);
-		socket.broadcast.to(idList[foundInvitee._id]).emit('invite', { roomName, invitee });
-		res.send({ updatedChannel });
-	} catch (err) {
-		console.log(err);
-		return res.status(422).send({ error: 'could not find user with that name' });
-	}
 });
 
 router.put('/kick', async (req, res) => {
