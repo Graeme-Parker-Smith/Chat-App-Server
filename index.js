@@ -4,6 +4,7 @@ require('./src/models/PrivateChannel');
 require('./src/models/PM');
 require('./src/models/Message');
 require('./src/models/Img');
+require('./src/models/ReportedUser');
 let localMongoUri;
 localMongoUri = require('./keys').localMongoUri;
 const express = require('express');

@@ -20,16 +20,19 @@ const userSchema = new mongoose.Schema({
 	mentions: Array,
 	msgsSent: {
 		type: Number,
-		default: 0
+		default: 0,
 	},
 	notificationsEnabled: Boolean,
 	createdAt: String,
+	reportedBy: {
+		type: mongoose.Schema.Types.ObjectId,
+	},
 });
 
 // Functions below modify User model and are called whenever a new User is created
 
 // salts and hashes password whenever we attempt to create a new user and save to DB
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
 	const user = this;
 	if (!user.isModified('password')) {
 		return next();
@@ -49,7 +52,7 @@ userSchema.pre('save', function(next) {
 		});
 	});
 });
-userSchema.pre('findOneAndUpdate', function(next) {
+userSchema.pre('findOneAndUpdate', function (next) {
 	if (!this._update.password) {
 		return next();
 	}
@@ -70,7 +73,7 @@ userSchema.pre('findOneAndUpdate', function(next) {
 });
 
 // adds a method to each user to automatically compare user submitted password to password stored in DB
-userSchema.methods.comparePassword = function(candidatePassword) {
+userSchema.methods.comparePassword = function (candidatePassword) {
 	const user = this;
 
 	return new Promise((resolve, reject) => {

@@ -9,6 +9,7 @@ const Channel = mongoose.model('Channel');
 const PrivateChannel = mongoose.model('PrivateChannel');
 const Message = mongoose.model('Message');
 const PM = mongoose.model('PM');
+const ReportedUser = mongoose.model('ReportedUser');
 
 const router = express.Router();
 const io = app.get('io');
@@ -20,7 +21,7 @@ const { addUser, removeUser, getUser, getUsersInRoom, countUsers } = require('..
 io.on('connection', (socket) => {
 	router.post('/addfriend', async (req, res) => {
 		try {
-			const { username, friendName, shouldRemove, shouldBlock } = req.body;
+			const { username, friendName, shouldRemove, shouldBlock, shouldReport } = req.body;
 			if (!username || !friendName) throw 'Could not add friend';
 			console.log('friendName', friendName);
 			const currentUser = await User.findOne({ username });
@@ -175,6 +176,10 @@ io.on('connection', (socket) => {
 						},
 					}
 				);
+				// if user was reported do this
+				if (shouldReport) {
+					await User.updateOne({ _id: friendToAdd._id }, { $push: { reportedBy: currentUser._id } });
+				}
 				await User.updateOne(
 					{ _id: friendToAdd._id },
 					{
