@@ -9,7 +9,6 @@ const Channel = mongoose.model('Channel');
 const PrivateChannel = mongoose.model('PrivateChannel');
 const Message = mongoose.model('Message');
 const PM = mongoose.model('PM');
-const ReportedUser = mongoose.model('ReportedUser');
 
 const router = express.Router();
 const io = app.get('io');

@@ -1,16 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const axios = require('axios');
+// const axios = require('axios');
 const requireAuth = require('../middlewares/requireAuth');
 const Channel = mongoose.model('Channel');
 const PrivateChannel = mongoose.model('PrivateChannel');
 const PM = mongoose.model('PM');
 const Message = mongoose.model('Message');
-const fs = require('fs');
-const path = require('path');
+// const fs = require('fs');
+// const path = require('path');
 const User = mongoose.model('User');
-const Img = mongoose.model('Img');
-const io = app.get('io');
+// const io = app.get('io');
 
 const moment = require('moment');
 

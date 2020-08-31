@@ -1,18 +1,17 @@
 const express = require('express');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
-const fs = require('fs');
+// const fs = require('fs');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = mongoose.model('User');
-const Channel = mongoose.model('Channel');
+// const Channel = mongoose.model('Channel');
 const Message = mongoose.model('Message');
-const Img = mongoose.model('Img');
 let localSCRT;
 localSCRT = require('../../keys').localSCRT;
 const SCRT = process.env.JWT_SECRET || localSCRT;
-const axios = require('axios');
-const fetch = require('node-fetch');
+// const axios = require('axios');
+// const fetch = require('node-fetch');
 // const cloudinary = require('../../cloudinary');
 const cloudinary = require('cloudinary');
 
