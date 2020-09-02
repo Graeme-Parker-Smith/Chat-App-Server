@@ -103,7 +103,7 @@ router.post('/channels', async (req, res) => {
 			description,
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
 			msgLife: msgLife,
-			mature
+			mature,
 		});
 		await channel.save();
 		console.log('Channel saved!');
@@ -139,7 +139,7 @@ router.post('/privatechannels', async (req, res) => {
 			description,
 			expireAt: lifespan ? moment().add(lifespan, 'minutes') : undefined,
 			msgLife: msgLife,
-			mature
+			mature,
 		});
 		await channel.save();
 		console.log('Private Channel saved!');
@@ -155,7 +155,7 @@ router.post('/privatechannels', async (req, res) => {
 });
 
 router.post('/updatechannel', async (req, res) => {
-	const { username, prevName, newName, newAvatar, isPrivate, newDescription } = req.body;
+	const { username, prevName, newName, newAvatar, isPrivate, newDescription, newMature } = req.body;
 	try {
 		if (!isPrivate) {
 			const foundChannel = await Channel.findOne({ name: prevName });
@@ -165,6 +165,7 @@ router.post('/updatechannel', async (req, res) => {
 					name: newName || foundChannel.name,
 					avatar: newAvatar || foundChannel.avatar,
 					description: newDescription || foundChannel.description,
+					mature: newMature,
 				},
 				{ returnNewDocument: true }
 			);
@@ -176,6 +177,7 @@ router.post('/updatechannel', async (req, res) => {
 					name: newName || foundChannel.name,
 					avatar: newAvatar || foundChannel.avatar,
 					description: newDescription || foundChannel.description,
+					mature: newMature,
 				},
 				{ returnNewDocument: true }
 			);
