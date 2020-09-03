@@ -182,7 +182,7 @@ io.on('connection', (socket) => {
 					await transporter.sendMail(
 						{
 							...mailOptions,
-							subject: `User ${friendToAdd._username} reported`,
+							subject: `User ${friendToAdd.username} reported`,
 							text: `User Reported: {id: ${friendToAdd._id}, username: ${friendToAdd.username}, avatar: ${friendToAdd.avatar}}, createdAt: ${friendToAdd.createdAt}`,
 						},
 						function (error, info) {
