@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const moment = require('moment');
+const { transporter, mailOptions } = require('../../email');
 
 const requireAuth = require('../middlewares/requireAuth');
 const User = mongoose.model('User');
@@ -178,6 +179,13 @@ io.on('connection', (socket) => {
 				// if user was reported do this
 				if (shouldReport) {
 					await User.updateOne({ _id: friendToAdd._id }, { $push: { reportedBy: currentUser._id } });
+					await transporter.sendMail(mailOptions, function (error, info) {
+						if (error) {
+							console.log(error);
+						} else {
+							console.log('Email sent: ' + info.response);
+						}
+					});
 				}
 				await User.updateOne(
 					{ _id: friendToAdd._id },
