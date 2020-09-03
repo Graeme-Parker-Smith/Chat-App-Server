@@ -9,6 +9,8 @@ const Message = mongoose.model('Message');
 // const fs = require('fs');
 // const path = require('path');
 const User = mongoose.model('User');
+const { transporter, mailOptions } = require('../../email');
+
 // const io = app.get('io');
 
 const moment = require('moment');
@@ -80,6 +82,25 @@ router.get('/channels', async (req, res) => {
 	// console.log('channels', moarChannels);
 	console.log('username is: ', currentUser.username);
 	res.send({ channels: moarChannels, privateChannels: moarPrivates, PMs: moarPMs, currentUser });
+});
+
+router.post('/reportchannel', async (req, res) => {
+	const { name, id, avatar, description, mature } = req.body;
+	transporter.sendMail(
+		{
+			...mailOptions,
+			subject: `Channel ${name} reported`,
+			text: `Channel Reported: {id: ${id}, name: ${name}, avatar: ${avatar}}, description: ${description}, mature: ${mature}`,
+		},
+		function (error, info) {
+			if (error) {
+				console.log(error);
+			} else {
+				console.log('Email sent: ' + info.response);
+				res.send('report sent.')
+			}
+		}
+	);
 });
 
 router.post('/channels', async (req, res) => {
