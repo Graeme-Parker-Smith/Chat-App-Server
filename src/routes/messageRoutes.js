@@ -179,13 +179,20 @@ io.on('connection', (socket) => {
 				// if user was reported do this
 				if (shouldReport) {
 					await User.updateOne({ _id: friendToAdd._id }, { $push: { reportedBy: currentUser._id } });
-					await transporter.sendMail(mailOptions, function (error, info) {
-						if (error) {
-							console.log(error);
-						} else {
-							console.log('Email sent: ' + info.response);
+					await transporter.sendMail(
+						{
+							...mailOptions,
+							subject: `User ${friendToAdd._username} reported`,
+							text: `User Reported: {id: ${friendToAdd._id}, username: ${friendToAdd.username}, avatar: ${friendToAdd.avatar}}, createdAt: ${friendToAdd.createdAt}`,
+						},
+						function (error, info) {
+							if (error) {
+								console.log(error);
+							} else {
+								console.log('Email sent: ' + info.response);
+							}
 						}
-					});
+					);
 				}
 				await User.updateOne(
 					{ _id: friendToAdd._id },
