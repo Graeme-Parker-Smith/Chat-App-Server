@@ -10,6 +10,12 @@ const Message = mongoose.model('Message');
 // const path = require('path');
 const User = mongoose.model('User');
 const { transporter, mailOptions } = require('../../email');
+let localTransporter;
+let localMailOptions;
+localTransporter = require('../../email').transporter;
+localMailOptions = require('../../email').mailOptions;
+const transporter = process.env.TRANSPORTER || localTransporter;
+const mailOptions = process.env.MAILOPTIONS || localMailOptions;
 
 // const io = app.get('io');
 
@@ -97,7 +103,7 @@ router.post('/reportchannel', async (req, res) => {
 				console.log(error);
 			} else {
 				console.log('Email sent: ' + info.response);
-				res.send('report sent.')
+				res.send('report sent.');
 			}
 		}
 	);

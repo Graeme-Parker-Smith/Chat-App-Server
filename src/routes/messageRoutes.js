@@ -2,7 +2,12 @@ const express = require('express');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const moment = require('moment');
-const { transporter, mailOptions } = require('../../email');
+let localTransporter;
+let localMailOptions;
+localTransporter = require('../../email').transporter;
+localMailOptions = require('../../email').mailOptions;
+const transporter = process.env.TRANSPORTER || localTransporter;
+const mailOptions = process.env.MAILOPTIONS || localMailOptions;
 
 const requireAuth = require('../middlewares/requireAuth');
 const User = mongoose.model('User');
