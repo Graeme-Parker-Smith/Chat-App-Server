@@ -80,19 +80,24 @@ io.on('connection', (socket) => {
 					socket.broadcast.to(idList[friendToAdd._id]).emit('update_user', {
 						newData: { channels, privateChannels, PMs, currentUser: updatedFriend },
 					});
-					const tokens = friendToAdd.tokens;
-					tokens.forEach((token) => {
-						axios.post('https://exp.host/--/api/v2/push/send', {
-							to: token,
-							sound: 'default',
-							title: imAddingFirst ? 'Friend Request' : 'New Friend!',
-							body: imAddingFirst
-								? `${currentUser.username} sent you a friend request!`
-								: `${currentUser.username} added you as a friend!`,
-							_displayInForeground: true,
-							data: { destination: 'Dash', initialIndex: imAddingFirst ? 2 : 1 },
-						});
-					});
+					// const tokens = friendToAdd.tokens;
+					// tokens.forEach((token) => {
+					// 	if (token === null) {
+					// 		return;
+					// 	}
+					// 	axios.post('https://exp.host/--/api/v2/push/send', {
+					// 		to: token,
+					// 		sound: 'default',
+					// 		title: imAddingFirst ? 'Friend Request' : 'New Friend!',
+					// 		body: imAddingFirst
+					// 			? `${currentUser.username} sent you a friend request!`
+					// 			: `${currentUser.username} added you as a friend!`,
+					// 		_displayInForeground: true,
+					// 		data: { destination: 'Dash', initialIndex: imAddingFirst ? 2 : 1 },
+					// 	});
+					// });
+
+
 				} else {
 					// if friend being added has already sent request to user
 					// update user
@@ -147,6 +152,9 @@ io.on('connection', (socket) => {
 					.emit('update_user', { newData: { channels, privateChannels, PMs, currentUser: updatedFriend } });
 				const tokens = friendToAdd.tokens;
 				tokens.forEach((token) => {
+					if (token === null) {
+						return;
+					}
 					axios.post('https://exp.host/--/api/v2/push/send', {
 						to: token,
 						sound: 'default',
@@ -426,15 +434,20 @@ io.on('connection', (socket) => {
 			}
 			if (!foundUser.tokens || foundUser.tokens < 1) throw 'User has no tokens. Cannot send notification';
 			foundUser.tokens.forEach((token) => {
-				axios.post('https://exp.host/--/api/v2/push/send', {
-					to: token,
-					sound: 'default',
-					title: sendingUser.username,
-					body: messageBody,
-					_displayInForeground: true,
-					data: { destination: 'Account', initialIndex: 0 },
-				});
+				if (token !== null) {
+					axios.post('https://exp.host/--/api/v2/push/send', {
+						to: token,
+						sound: 'default',
+						title: sendingUser.username,
+						body: messageBody,
+						_displayInForeground: true,
+						data: { destination: 'Account', initialIndex: 0 },
+					});
+					return;
+				}
+				return;
 			});
+			res.send('notification sent.');
 		} catch (err) {
 			console.log(err);
 		}
