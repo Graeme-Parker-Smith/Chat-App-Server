@@ -16,6 +16,7 @@ const transporter =
 		auth: process.env.MAILAUTH,
 	});
 const mailOptions = process.env.MAILOPTIONS || localMailOptions;
+console.log('mailOptions is: ', mailOptions);
 
 const requireAuth = require('../middlewares/requireAuth');
 const User = mongoose.model('User');
