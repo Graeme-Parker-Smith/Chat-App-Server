@@ -100,6 +100,11 @@ router.get('/channels', async (req, res) => {
 
 router.post('/reportchannel', async (req, res) => {
 	const { name, id, avatar, description, mature } = req.body;
+	console.log('recipients is: ', {
+		...mailOptions,
+		subject: `Channel ${name} reported`,
+		text: `Channel Reported: {id: ${id}, name: ${name}, avatar: ${avatar}}, description: ${description}, mature: ${mature}`,
+	});
 	transporter.sendMail(
 		{
 			...mailOptions,
