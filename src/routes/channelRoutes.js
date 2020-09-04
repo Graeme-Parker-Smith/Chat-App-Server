@@ -17,15 +17,19 @@ let localMailOptions;
 // localTransporter = require('../../email').transporter;
 // localMailOptions = require('../../email').mailOptions;
 // const transporter = process.env.TRANSPORTER || localTransporter;
+const email = process.env.EMAIL || localMailOptions;
 const transporter =
 	localTransporter ||
 	nodemailer.createTransport({
 		service: 'gmail',
-		auth: process.env.MAILAUTH,
+		auth: {
+			user: email,
+			pass: process.env.MAILPASS,
+		},
 	});
-const email = process.env.EMAIL || localMailOptions;
 
 console.log('mailOptions is: ', email);
+console.log('transporter is: ', transporter);
 
 // const io = app.get('io');
 
