@@ -6,7 +6,13 @@ let localTransporter;
 let localMailOptions;
 // localTransporter = require('../../email').transporter;
 // localMailOptions = require('../../email').mailOptions;
-const transporter = process.env.TRANSPORTER || localTransporter;
+// const transporter = process.env.TRANSPORTER || localTransporter;
+const transporter =
+	localTransporter ||
+	nodemailer.createTransport({
+		service: 'gmail',
+		auth: process.env.MAILAUTH,
+	});
 const mailOptions = process.env.MAILOPTIONS || localMailOptions;
 
 const requireAuth = require('../middlewares/requireAuth');
@@ -101,8 +107,6 @@ io.on('connection', (socket) => {
 					// 		data: { destination: 'Dash', initialIndex: imAddingFirst ? 2 : 1 },
 					// 	});
 					// });
-
-
 				} else {
 					// if friend being added has already sent request to user
 					// update user

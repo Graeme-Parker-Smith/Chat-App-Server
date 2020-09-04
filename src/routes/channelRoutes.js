@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const nodemailer = require('nodemailer');
+
 // const axios = require('axios');
 const requireAuth = require('../middlewares/requireAuth');
 const Channel = mongoose.model('Channel');
@@ -14,7 +16,13 @@ let localTransporter;
 let localMailOptions;
 // localTransporter = require('../../email').transporter;
 // localMailOptions = require('../../email').mailOptions;
-const transporter = process.env.TRANSPORTER || localTransporter;
+// const transporter = process.env.TRANSPORTER || localTransporter;
+const transporter =
+	localTransporter ||
+	nodemailer.createTransport({
+		service: 'gmail',
+		auth: process.env.MAILAUTH,
+	});
 const mailOptions = process.env.MAILOPTIONS || localMailOptions;
 
 // const io = app.get('io');
