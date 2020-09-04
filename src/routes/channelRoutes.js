@@ -9,7 +9,7 @@ const Message = mongoose.model('Message');
 // const fs = require('fs');
 // const path = require('path');
 const User = mongoose.model('User');
-const { transporter, mailOptions } = require('../../email');
+// const { transporter, mailOptions } = require('../../email');
 let localTransporter;
 let localMailOptions;
 // localTransporter = require('../../email').transporter;
