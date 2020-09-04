@@ -23,8 +23,9 @@ const transporter =
 		service: 'gmail',
 		auth: process.env.MAILAUTH,
 	});
-const mailOptions = process.env.MAILOPTIONS || localMailOptions;
-console.log('mailOptions is: ', mailOptions);
+const email = process.env.EMAIL || localMailOptions;
+
+console.log('mailOptions is: ', email);
 
 // const io = app.get('io');
 
@@ -102,15 +103,15 @@ router.get('/channels', async (req, res) => {
 router.post('/reportchannel', async (req, res) => {
 	const { name, id, avatar, description, mature } = req.body;
 	console.log('recipients is: ', {
-		from: mailOptions.from,
-		to: mailOptions.to,
+		from: email,
+		to: email,
 		subject: `Channel ${name} reported`,
 		text: `Channel Reported: {id: ${id}, name: ${name}, avatar: ${avatar}}, description: ${description}, mature: ${mature}`,
 	});
 	transporter.sendMail(
 		{
-			from: mailOptions.from,
-			to: mailOptions.to,
+			from: email,
+			to: email,
 			subject: `Channel ${name} reported`,
 			text: `Channel Reported: {id: ${id}, name: ${name}, avatar: ${avatar}}, description: ${description}, mature: ${mature}`,
 		},

@@ -15,7 +15,7 @@ const transporter =
 		service: 'gmail',
 		auth: process.env.MAILAUTH,
 	});
-const mailOptions = process.env.MAILOPTIONS || localMailOptions;
+const email = process.env.EMAIL || localMailOptions;
 
 const requireAuth = require('../middlewares/requireAuth');
 const User = mongoose.model('User');
@@ -200,7 +200,8 @@ io.on('connection', (socket) => {
 					await User.updateOne({ _id: friendToAdd._id }, { $push: { reportedBy: currentUser._id } });
 					transporter.sendMail(
 						{
-							...mailOptions,
+							from: email,
+							to: email,
 							subject: `User ${friendToAdd.username} reported`,
 							text: `User Reported: {id: ${friendToAdd._id}, username: ${friendToAdd.username}, avatar: ${friendToAdd.avatar}}, createdAt: ${friendToAdd.createdAt}`,
 						},
