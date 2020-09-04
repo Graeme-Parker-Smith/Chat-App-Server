@@ -2,6 +2,8 @@ const express = require('express');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const moment = require('moment');
+const nodemailer = require('nodemailer');
+
 let localTransporter;
 let localMailOptions;
 // localTransporter = require('../../email').transporter;
