@@ -82,7 +82,7 @@ router.post('/signup', async (req, res) => {
 
 router.post('/signin', async (req, res) => {
 	const { username, password } = req.body;
-	console.log('signin', username + ' ' + password);
+	// console.log('signin', username + ' ' + password);
 	if (!username || !password) {
 		return res.status(422).send({ error: 'Must provide username and password' });
 	}

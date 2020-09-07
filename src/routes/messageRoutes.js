@@ -39,9 +39,9 @@ io.on('connection', (socket) => {
 		try {
 			const { username, friendName, shouldRemove, shouldBlock, shouldReport } = req.body;
 			if (!username || !friendName) throw 'Could not add friend';
-			console.log('friendName', friendName);
+			// console.log('friendName', friendName);
 			const currentUser = await User.findOne({ username });
-			console.log('currentUser.username', currentUser.username);
+			// console.log('currentUser.username', currentUser.username);
 			const friendToAdd = await User.findOne({
 				username: friendName,
 				'blocked._id': { $nin: [currentUser._id] },
@@ -50,9 +50,9 @@ io.on('connection', (socket) => {
 			if (!shouldRemove) {
 				// if added friend does not have current user added
 				let imAddingFirst = !friendToAdd.pending.some((f) => {
-					console.log('f._id', f._id);
-					console.log('currentUser._id', currentUser._id);
-					console.log('f._id === currentUser._id', `${f._id}` === `${currentUser._id}`);
+					// console.log('f._id', f._id);
+					// console.log('currentUser._id', currentUser._id);
+					// console.log('f._id === currentUser._id', `${f._id}` === `${currentUser._id}`);
 					return `${f._id}` === `${currentUser._id}`;
 				});
 				console.log('imAddingFirst: ', imAddingFirst);
@@ -152,7 +152,7 @@ io.on('connection', (socket) => {
 					});
 					await newPM.save();
 				}
-				console.log('friend id', idList[friendToAdd._id]);
+				// console.log('friend id', idList[friendToAdd._id]);
 				const channels = await Channel.find({});
 				const privateChannels = await PrivateChannel.find({
 					members: friendToAdd._id,
@@ -300,10 +300,10 @@ io.on('connection', (socket) => {
 		// console.log('user.room', getUsersInRoom(user.room));
 
 		let channelsData = countUsers();
-		console.log('channelsData', channelsData);
+		// console.log('channelsData', channelsData);
 		io.emit('channelsData', { channelsData });
 		if (room !== socket.id) {
-			console.log('users in room', getUsersInRoom(user.room));
+			// console.log('users in room', getUsersInRoom(user.room));
 			io.to(user.room).emit('roomData', {
 				room: user.room,
 				users: getUsersInRoom(user.room),
@@ -316,7 +316,7 @@ io.on('connection', (socket) => {
 	socket.on(
 		'sendMessage',
 		async ({ creator, avatar, content, roomName, time, isImage, isVideo, roomType, room_id }) => {
-			console.log('server receives message');
+			// console.log('server receives message');
 			io.in(room_id).emit('message', {
 				user: creator,
 				avatar: avatar,
@@ -326,7 +326,7 @@ io.on('connection', (socket) => {
 				isVideo,
 			});
 
-			console.log('room_id', room_id);
+			// console.log('room_id', room_id);
 
 			const filter = { _id: room_id };
 			try {
@@ -425,7 +425,7 @@ io.on('connection', (socket) => {
 			} else {
 				messages = allMessages.slice(Math.max(allMessages.length - 19, 1));
 			}
-			console.log('messages fetched length is: ', messages.length);
+			// console.log('messages fetched length is: ', messages.length);
 			// console.log("req.user is: ", req.user);
 			// const allUsers = getUsersInRoom(thisChannel);
 			res.send({ messages, username });

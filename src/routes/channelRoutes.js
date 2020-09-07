@@ -28,8 +28,8 @@ const transporter =
 		},
 	});
 
-console.log('mailOptions is: ', email);
-console.log('transporter is: ', transporter);
+// console.log('mailOptions is: ', email);
+// console.log('transporter is: ', transporter);
 
 // const io = app.get('io');
 
@@ -41,10 +41,10 @@ router.use(requireAuth);
 
 router.get('/images', async (req, res) => {
 	const { avatarId } = req.query;
-	console.log('aId', avatarId);
+	// console.log('aId', avatarId);
 	const foundImgs = await Img.find({ _id: avatarId });
 	const buffer = foundImgs[0].img.data;
-	console.log(buffer);
+	// console.log(buffer);
 	res.send(buffer);
 });
 
@@ -105,18 +105,18 @@ router.get('/channels', async (req, res) => {
 	// 	// console.log("moarChan", moarChan)
 	// });
 	// console.log('channels', moarChannels);
-	console.log('username is: ', currentUser.username);
+	// console.log('username is: ', currentUser.username);
 	res.send({ channels: moarChannels, privateChannels: moarPrivates, PMs: moarPMs, currentUser });
 });
 
 router.post('/reportchannel', async (req, res) => {
 	const { name, id, avatar, description, mature } = req.body;
-	console.log('recipients is: ', {
-		from: email,
-		to: email,
-		subject: `Channel ${name} reported`,
-		text: `Channel Reported: {id: ${id}, name: ${name}, avatar: ${avatar}}, description: ${description}, mature: ${mature}`,
-	});
+	// console.log('recipients is: ', {
+	// 	from: email,
+	// 	to: email,
+	// 	subject: `Channel ${name} reported`,
+	// 	text: `Channel Reported: {id: ${id}, name: ${name}, avatar: ${avatar}}, description: ${description}, mature: ${mature}`,
+	// });
 	transporter.sendMail(
 		{
 			from: email,
@@ -141,12 +141,12 @@ router.post('/channels', async (req, res) => {
 	if (!name || !creator || !foundCreator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
-	console.log('channel name is: ', name);
-	console.log('creator name is: ', creator);
-	console.log('channel avatar is: ', avatar);
-	console.log('lifespan: ', lifespan);
-	console.log('msgLife: ', msgLife);
-	console.log('creator id', foundCreator);
+	// console.log('channel name is: ', name);
+	// console.log('creator name is: ', creator);
+	// console.log('channel avatar is: ', avatar);
+	// console.log('lifespan: ', lifespan);
+	// console.log('msgLife: ', msgLife);
+	// console.log('creator id', foundCreator);
 	try {
 		const channel = new Channel({
 			name,
@@ -174,13 +174,13 @@ router.post('/channels', async (req, res) => {
 router.post('/privatechannels', async (req, res) => {
 	const { name, creator, avatar, description, lifespan, msgLife, mature } = req.body;
 	const foundCreator = await User.findOne({ username: creator });
-	console.log('foundCreator', foundCreator);
+	// console.log('foundCreator', foundCreator);
 	if (!name || !creator || !foundCreator) {
 		return res.status(422).send({ error: 'Channel must have a name and creator.' });
 	}
-	console.log('channel name is: ', name);
-	console.log('creator name is: ', creator);
-	console.log('channel avatar is: ', avatar);
+	// console.log('channel name is: ', name);
+	// console.log('creator name is: ', creator);
+	// console.log('channel avatar is: ', avatar);
 
 	try {
 		const channel = new PrivateChannel({
