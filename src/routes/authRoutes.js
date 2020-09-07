@@ -74,6 +74,7 @@ router.post('/signup', async (req, res) => {
 		const token = jwt.sign({ userId: user._id }, SCRT);
 		res.send({ token });
 	} catch (err) {
+		console.log("err message",err.message);
 		// return res.send(err);
 		return res.status(422).send(err.message);
 	}
@@ -96,7 +97,7 @@ router.post('/signin', async (req, res) => {
 		const token = jwt.sign({ userId: user._id }, SCRT);
 		res.send({ token, userData: user });
 	} catch (err) {
-		return res.status(422).send({ error: 'Invalid password or username' });
+		return res.status(403).send({ error: 'Invalid password or username' });
 	}
 });
 
