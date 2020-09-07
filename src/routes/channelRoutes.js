@@ -78,15 +78,20 @@ router.get('/channels', async (req, res) => {
 		}
 		return result;
 	};
+
 	const privateChannels = await PrivateChannel.find({
 		members: currentUser._id,
 	});
-	const moarChannels = await addMessageLengths(channels);
-	const moarPrivates = await addMessageLengths(privateChannels);
+	const moarChannels1 = await addMessageLengths(channels);
+	const moarPrivates1 = await addMessageLengths(privateChannels);
 	const PMs = await PM.find({
 		members: currentUser._id,
 	});
-	const moarPMs = await addMessageLengths(PMs);
+	const moarPMs1 = await addMessageLengths(PMs);
+
+	const moarChannels = moarChannels1.sort((a, b) => b.msgCount - a.msgCount);
+	const moarPrivates = moarPrivates1.sort((a, b) => b.msgCount - a.msgCount);
+	const moarPMs = moarPMs1.sort((a, b) => b.msgCount - a.msgCount);
 	// let moarPMs = [];
 	// await PMs.forEach(async (chan) => {
 	// 	let thisChansMessages = await Message.countDocuments({ channel: chan._doc ? chan._doc._id : chan._id });
