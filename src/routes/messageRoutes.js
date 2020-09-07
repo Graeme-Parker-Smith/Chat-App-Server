@@ -6,8 +6,8 @@ const nodemailer = require('nodemailer');
 
 let localTransporter;
 let localMailOptions;
-localTransporter = require('../../email').transporter;
-localMailOptions = require('../../email').mailOptions;
+// localTransporter = require('../../email').transporter;
+// localMailOptions = require('../../email').mailOptions;
 // const transporter = process.env.TRANSPORTER || localTransporter;
 const email = process.env.EMAIL || localMailOptions;
 const transporter =

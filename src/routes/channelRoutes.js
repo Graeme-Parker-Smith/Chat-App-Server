@@ -14,8 +14,8 @@ const User = mongoose.model('User');
 // const { transporter, mailOptions } = require('../../email');
 let localTransporter;
 let localMailOptions;
-localTransporter = require('../../email').transporter;
-localMailOptions = require('../../email').mailOptions;
+// localTransporter = require('../../email').transporter;
+// localMailOptions = require('../../email').mailOptions;
 // const transporter = process.env.TRANSPORTER || localTransporter;
 const email = process.env.EMAIL || localMailOptions;
 const transporter =

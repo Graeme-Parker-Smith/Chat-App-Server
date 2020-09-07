@@ -8,7 +8,7 @@ const User = mongoose.model('User');
 // const Channel = mongoose.model('Channel');
 const Message = mongoose.model('Message');
 let localSCRT;
-localSCRT = require('../../keys').localSCRT;
+// localSCRT = require('../../keys').localSCRT;
 const SCRT = process.env.JWT_SECRET || localSCRT;
 // const axios = require('axios');
 // const fetch = require('node-fetch');
